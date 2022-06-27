@@ -2,7 +2,7 @@
 
 Allows processing of images with [MMSegmentation](https://github.com/open-mmlab/mmsegmentation).
 
-Uses PyTorch 1.11.0 and CUDA 11.3.
+Uses PyTorch 1.11.0 and CUDA 11.1.
 
 ## Version
 
@@ -34,7 +34,7 @@ June 3rd, 2022
   ```bash
   docker run --gpus=all --shm-size 8G \
     -v /local/dir:/container/dir \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.3
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1
   ```
 
   **NB:** For docker versions older than 19.03 (`docker version`), use `--runtime=nvidia` instead of `--gpus=all`.
@@ -50,12 +50,12 @@ June 3rd, 2022
 The image is also available from [Docker hub](https://hub.docker.com/u/waikatodatamining):
 
 ```
-waikatodatamining/mmsegmentation:0.25.0_cuda11.3
+waikatodatamining/mmsegmentation:0.25.0_cuda11.1
 ```
 
 ### Build local image
 
-* Build the image from Docker file (from within /path_to/mmsegmentation/0.25.0_cuda11.3)
+* Build the image from Docker file (from within /path_to/mmsegmentation/0.25.0_cuda11.1)
 
   ```bash
   docker build -t mmseg .
