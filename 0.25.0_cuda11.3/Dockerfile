@@ -15,7 +15,7 @@ ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 ENV FORCE_CUDA="1"
 
 # Install MMCV
-RUN pip install mmcv-full==1.4.4
+RUN pip install mmcv-full==1.4.4 -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.11.0/index.html
 
 # Install MMDetection
 RUN git clone https://github.com/open-mmlab/mmsegmentation.git /mmsegmentation && \
