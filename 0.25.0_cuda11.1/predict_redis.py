@@ -52,7 +52,7 @@ def process_image(msg_cont):
 
 if __name__ == '__main__':
     parser = create_parser('MMSegmentation - Prediction (Redis)', prog="mmseg_predict_redis", prefix="redis_")
-    parser.add_argument('--checkpoint', help='Path to the trained model checkpoint', required=True, default=None)
+    parser.add_argument('--model', help='Path to the trained model checkpoint', required=True, default=None)
     parser.add_argument('--config', help='Path to the config file', required=True, default=None)
     parser.add_argument('--device', help='The CUDA device to use', default="cuda:0")
     parser.add_argument('--prediction_format', metavar='FORMAT', default="grayscale", choices=["grayscale", "bluechannel"], help='The format for the prediction images')
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     parsed = parser.parse_args()
 
     try:
-        model = init_segmentor(parsed.config, parsed.checkpoint, device=parsed.device)
+        model = init_segmentor(parsed.config, parsed.model, device=parsed.device)
 
         config = Container()
         config.model = model

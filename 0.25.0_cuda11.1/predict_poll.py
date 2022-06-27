@@ -116,7 +116,7 @@ def predict_on_images(input_dir, model, output_dir, tmp_dir, prediction_format="
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="MMSegmentation - Prediction", prog="mmseg_predict_poll")
-    parser.add_argument('--checkpoint', help='Path to the trained model checkpoint', required=True, default=None)
+    parser.add_argument('--model', help='Path to the trained model checkpoint', required=True, default=None)
     parser.add_argument('--config', help='Path to the config file', required=True, default=None)
     parser.add_argument('--device', help='The CUDA device to use', default="cuda:0")
     parser.add_argument('--prediction_in', help='Path to the test images', required=True, default=None)
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     parsed = parser.parse_args()
 
     try:
-        model = init_segmentor(parsed.config, parsed.checkpoint, device=parsed.device)
+        model = init_segmentor(parsed.config, parsed.model, device=parsed.device)
 
         # Performing the prediction and producing the csv files
         predict_on_images(parsed.prediction_in, model, parsed.prediction_out, parsed.prediction_tmp,
