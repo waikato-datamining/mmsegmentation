@@ -127,3 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# others
+*.iml
+.idea/
+*.swp
+*~
+*.pth
+psp*.py
+mmsegmentation-*/
+mmcv-*/
+cache/
