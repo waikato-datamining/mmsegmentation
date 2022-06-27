@@ -26,6 +26,7 @@ def process_image(msg_cont):
 
         prediction = inference_segmentor(config.model, image)
         pr_mask = prediction[0]
+        pr_mask= np.array(pr_mask, dtype=np.uint8)
 
         # not grayscale?
         if config.prediction_format == "bluechannel":

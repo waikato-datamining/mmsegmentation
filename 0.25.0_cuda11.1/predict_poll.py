@@ -46,12 +46,15 @@ def process_image(fname, output_dir, poller):
     try:
         prediction = inference_segmentor(poller.params.model, fname)
         pr_mask = prediction[0]
-        fname_out = os.path.join(output_dir, os.path.splitext(os.path.basename(fname))[0] + ".png")
+        pr_mask= np.array(pr_mask, dtype=np.uint8)
+        
         # not grayscale?
         if poller.params.prediction_format == "bluechannel":
             pr_mask = cv2.cvtColor(pr_mask, cv2.COLOR_GRAY2RGB)
             pr_mask[:, :, 1] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
             pr_mask[:, :, 2] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
+
+        fname_out = os.path.join(output_dir, os.path.splitext(os.path.basename(fname))[0] + ".png")
         cv2.imwrite(fname_out, pr_mask)
         result.append(fname_out)
     except KeyboardInterrupt:
