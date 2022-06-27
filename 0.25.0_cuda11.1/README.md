@@ -2,7 +2,7 @@
 
 Allows processing of images with [MMSegmentation](https://github.com/open-mmlab/mmsegmentation).
 
-Uses PyTorch 1.11.0 and CUDA 11.1.
+Uses PyTorch 1.9.0 and CUDA 11.1.
 
 ## Version
 

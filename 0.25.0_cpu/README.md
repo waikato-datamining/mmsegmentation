@@ -2,7 +2,7 @@
 
 Allows processing of images with [MMSegmentation](https://github.com/open-mmlab/mmsegmentation).
 
-Uses PyTorch 1.11.0 and [CPU support](https://mmsegmentation.readthedocs.io/en/latest/get_started.html#install-on-cpu-only-platforms).
+Uses PyTorch 1.9.0 and [CPU support](https://mmsegmentation.readthedocs.io/en/latest/get_started.html#install-on-cpu-only-platforms).
 
 ## Version
 

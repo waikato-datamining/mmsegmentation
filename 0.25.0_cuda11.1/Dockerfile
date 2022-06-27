@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y git ninja-build libglib2.0-0 libsm6 lib
     && rm -rf /var/lib/apt/lists/*
 
 # Install torch
-RUN pip install --no-cache-dir torch==1.11.0+cu111 torchvision==0.11.0+cu111 \
+RUN pip install --no-cache-dir torch==1.9.0+cu111 torchvision==0.10.0+cu111 \
     -f https://download.pytorch.org/whl/torch_stable.html
 
 ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0+PTX"
