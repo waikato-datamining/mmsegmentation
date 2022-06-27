@@ -21,15 +21,14 @@ ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 ENV FORCE_CUDA="1"
 
 # Install MMCV
-RUN pip install mmcv-full==1.4.4 -f https://download.openmmlab.com/mmcv/dist/cu111/torch1.11.0/index.html
+RUN pip install --no-cache-dir mmcv-full==1.4.4 -f https://download.openmmlab.com/mmcv/dist/cu111/torch1.11.0/index.html
 
 # Install MMDetection
 RUN git clone https://github.com/open-mmlab/mmsegmentation.git /mmsegmentation && \
     cd /mmsegmentation && \
     git checkout tags/v0.25.0
 WORKDIR /mmsegmentation
-RUN pip install -r requirements/build.txt && \
-    pip install --no-cache-dir -e . && \
+RUN pip install --no-cache-dir -v -e . && \
     pip install --no-cache-dir python-image-complete "simple-file-poller>=0.0.9" && \
     pip install --no-cache-dir redis "redis-docker-harness==0.0.1"
 
