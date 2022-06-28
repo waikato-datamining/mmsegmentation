@@ -70,6 +70,7 @@ waikatodatamining/mmsegmentation:0.25.0_cpu
 
 The following scripts are available:
 
+* `mmseg_config` - for expanding/exporting default configurations
 * `mmseg_predict_poll` - for applying a model to images (uses file-polling)
 * `mmseg_predict_redis` - for applying a model to images (via [Redis](https://redis.io/) backend), 
   add `--net=host` to the Docker options 
