@@ -140,4 +140,5 @@ mmcv-*/
 cache/
 predictions/
 config/
+output/
 
