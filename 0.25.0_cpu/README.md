@@ -172,3 +172,10 @@ prefixed with `/root`.
 
 You can use [simple-redis-helper](https://pypi.org/project/simple-redis-helper/) to broadcast images 
 and listen for image segmentation results when testing.
+
+
+## Troubleshooting
+
+* `ValueError: SyncBatchNorm expected input tensor to be on GPU`
+
+  Replace `SyncBN` with `BN` in the config file (see [here](https://github.com/open-mmlab/mmsegmentation/issues/387#issuecomment-784712980)).
