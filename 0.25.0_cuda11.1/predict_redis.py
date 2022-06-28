@@ -20,8 +20,8 @@ def process_image(msg_cont):
     try:
         start_time = datetime.now()
 
-        array = np.frombuffer(io.BytesIO(msg_cont.message['data']), np.uint8)
-        image = cv2.imdecode(array, cv2.CV_LOAD_IMAGE_COLOR)
+        array = np.frombuffer(msg_cont.message['data'], np.uint8)
+        image = cv2.imdecode(array, cv2.IMREAD_COLOR)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         prediction = inference_segmentor(config.model, image)
@@ -34,7 +34,7 @@ def process_image(msg_cont):
             pr_mask[:, :, 1] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
             pr_mask[:, :, 2] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
 
-        out_data = cv2.imencode('.png', pr_mask)[1].tostring()
+        out_data = cv2.imencode('.png', pr_mask)[1].tobytes()
         msg_cont.params.redis.publish(msg_cont.params.channel_out, out_data)
 
         if config.verbose:
