@@ -72,10 +72,105 @@ waikatodatamining/mmsegmentation:0.25.0_cuda11.1
 
 The following scripts are available:
 
-* `mmseg_config` - for expanding/exporting default configurations
-* `mmseg_predict_poll` - for applying a model to images (uses file-polling)
+* `mmseg_config` - for expanding/exporting default configurations (calls `/mmsegmentation/tools/misc/print_config.py`)
+* `mmseg_train` - for training a model (calls `/mmsegmentation/mmseg/tools/train.py`)
+* `mmseg_predict_poll` - for applying a model to images (uses file-polling, calls `/mmsegmentation/tools/predict_poll.py`)
 * `mmseg_predict_redis` - for applying a model to images (via [Redis](https://redis.io/) backend), 
-  add `--net=host` to the Docker options 
+  add `--net=host` to the Docker options (calls `/mmsegmentation/tools/predict_redis.py`)
+
+
+### Usage
+
+* The annotations must be in indexed PNG format. You can use [wai.annotations](https://github.com/waikato-ufdl/wai-annotations) 
+  to convert your data from other formats.
+  
+* Store class names or label strings in an environment variable called `MMSEG_CLASSES` **(inside the container)**:
+
+  ```bash
+  export MMSEG_CLASSES=\'class1\',\'class2\',...
+  ```
+  
+* Alternatively, have the labels stored in a text file with the labels separated by commas and the `MMSEG_CLASSES`
+  environment variable point at the file.
+  
+  * The labels are stored in `/data/labels.txt` either as comma-separated list (`class1,class2,...`) or one per line.
+  
+  * Export `MMSEG_CLASSES` as follows:
+
+    ```bash
+    export MMSEG_CLASSES=/data/labels.txt
+    ```
+
+* Use `mmseg_config` to export the config file (of the model you want to train) from `/mmdetection/configs` 
+  (inside the container), then follow [these instructions](#config).
+
+* Train
+
+  ```bash
+  mmseg_train /path_to/your_data_config.py \
+      --work-dir /where/to/save/everything
+  ```
+
+* Predict and produce PNG files
+
+  ```bash
+  mmseg_predict_poll \
+      --model /path_to/epoch_n.pth \
+      --config /path_to/your_data_config.py \
+      --prediction_in /path_to/test_imgs \
+      --prediction_out /path_to/test_results
+  ```
+  Run with -h for all available options.
+
+* Predict via Redis backend
+
+  You need to start the docker container with the `--net=host` option if you are using the host's Redis server.
+
+  The following command listens for images coming through on channel `images` and broadcasts
+  predicted images on channel `predictions`:
+
+  ```bash
+  mmseg_predict_redis \
+      --model /path_to/epoch_n.pth \
+      --config /path_to/your_data_config.py \
+      --redis_in images \
+      --redis_out predictions
+  ```
+  
+  Run with `-h` for all available options.
+
+
+## Example config files
+
+You can output example config files using (stored under `/mmsegmentation/configs` for the various network types):
+
+```commandline
+mmseg_config /path/to/my_config.py
+```
+
+You can browse the config files [here](https://github.com/open-mmlab/mmsegmentation/tree/v0.25.0/configs).
+
+
+## <a name="config">Preparing the config file</a>
+
+* If necessary, change `num_classes` to number of labels (background not counted).
+* Change `dataset_type` to `ExternalDataset` and any occurrences of `type` in the `train`, `test`, `val` 
+  sections of the `data` dictionary.
+* Change `data_root` to the root path of your dataset (the directory containing `train` and `val` directories).
+* In `train_pipeline`, `val_pipeline` and `test_pipeline`: change `img_scale` to preferred values. 
+  Image will be scaled to the smaller value between (larger_scale/larger_image_side) and (smaller_scale/smaller_image_side).
+* Adapt `img_dir` and `ann_dir` to suit your dataset.
+* Interval in `checkpoint_config` will determine the frequency of saving models while training 
+  (10 for example will save a model after every 10 epochs).
+* In the `runner` property, change `max_iters` to how many epochs you want to train the model for.
+* Change `load_from` to the file name of the pre-trained network that you downloaded from the model zoo instead
+  of downloading it automatically.
+* If you want to include the validation set, add `, ('val', 1)` to `workflow`.
+
+_You don't have to copy the config file back, just point at it when training._
+
+**NB:** A fully expanded config file will get placed in the output directory with the same
+name as the config plus the extension *.full*.
 
 
 ## Permissions

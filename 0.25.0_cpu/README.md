@@ -70,15 +70,42 @@ waikatodatamining/mmsegmentation:0.25.0_cpu
 
 The following scripts are available:
 
-* `mmseg_config` - for expanding/exporting default configurations
-* `mmseg_predict_poll` - for applying a model to images (uses file-polling)
+* `mmseg_config` - for expanding/exporting default configurations (calls `/mmsegmentation/tools/misc/print_config.py`)
+* `mmseg_predict_poll` - for applying a model to images (uses file-polling, calls `/mmsegmentation/tools/predict_poll.py`)
 * `mmseg_predict_redis` - for applying a model to images (via [Redis](https://redis.io/) backend), 
-  add `--net=host` to the Docker options 
+  add `--net=host` to the Docker options (calls `/mmsegmentation/tools/predict_redis.py`)
 
 
 ### Usage
 
-* TODO
+* Predict and produce PNG files
+
+  ```bash
+  mmseg_predict_poll \
+      --model /path_to/epoch_n.pth \
+      --config /path_to/your_data_config.py \
+      --prediction_in /path_to/test_imgs \
+      --prediction_out /path_to/test_results
+  ```
+  Run with -h for all available options.
+
+* Predict via Redis backend
+
+  You need to start the docker container with the `--net=host` option if you are using the host's Redis server.
+
+  The following command listens for images coming through on channel `images` and broadcasts
+  predicted images on channel `predictions`:
+
+  ```bash
+  mmseg_predict_redis \
+      --model /path_to/epoch_n.pth \
+      --config /path_to/your_data_config.py \
+      --redis_in images \
+      --redis_out predictions
+  ```
+  
+  Run with `-h` for all available options.
+
 
 ## Pre-built images
 
