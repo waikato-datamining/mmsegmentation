@@ -138,3 +138,6 @@ psp*.py
 mmsegmentation-*/
 mmcv-*/
 cache/
+predictions/
+config/
+
