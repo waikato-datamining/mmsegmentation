@@ -101,7 +101,7 @@ The following scripts are available:
     export MMSEG_CLASSES=/data/labels.txt
     ```
 
-* Use `mmseg_config` to export the config file (of the model you want to train) from `/mmdetection/configs` 
+* Use `mmseg_config` to export the config file (of the model you want to train) from `/mmsegmentation/configs` 
   (inside the container), then follow [these instructions](#config).
 
 * Train
@@ -140,11 +140,62 @@ The following scripts are available:
   Run with `-h` for all available options.
 
 
+## Publish images
+
+### Build
+
+```bash
+docker build -t open-mmlab/mmsegmentation:0.25.0_cuda11.1 .
+```
+
+### Inhouse registry  
+
+* Tag
+
+  ```bash
+  docker tag \
+    mmsegmentation:0.25.0_cuda11.1 \
+    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1
+  ```
+  
+* Push
+
+  ```bash
+  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1
+  ```
+  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
+  
+  ```bash
+  docker login public-push.aml-repo.cms.waikato.ac.nz:443
+  ```
+
+### Docker hub  
+
+* Tag
+
+  ```bash
+  docker tag \
+    mmsegmentation:0.25.0_cuda11.1 \
+    waikatodatamining/mmsegmentation:0.25.0_cuda11.1
+  ```
+  
+* Push
+
+  ```bash
+  docker push waikatodatamining/mmsegmentation:0.25.0_cuda11.1
+  ```
+  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
+  
+  ```bash
+  docker login
+  ``` 
+
+
 ## Example config files
 
 You can output example config files using (stored under `/mmsegmentation/configs` for the various network types):
 
-```commandline
+```bash
 mmseg_config /path/to/my_config.py
 ```
 

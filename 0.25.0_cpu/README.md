@@ -107,14 +107,16 @@ The following scripts are available:
   Run with `-h` for all available options.
 
 
-## Pre-built images
+## Publish images
 
-* Build
+### Build
 
-  ```bash
-  docker build -t open-mmlab/mmsegmentation:0.25.0_cpu .
-  ```
-  
+```bash
+docker build -t open-mmlab/mmsegmentation:0.25.0_cpu .
+```
+
+### Inhouse registry  
+
 * Tag
 
   ```bash
@@ -133,35 +135,27 @@ The following scripts are available:
   ```bash
   docker login public-push.aml-repo.cms.waikato.ac.nz:443
   ```
-  
-* Pull
 
-  If image is available in aml-repo and you just want to use it, you can pull using following command and then [run](#run).
+### Docker hub  
+
+* Tag
 
   ```bash
-  docker pull public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cpu
+  docker tag \
+    mmsegmentation:0.25.0_cpu \
+    waikatodatamining/mmsegmentation:0.25.0_cpu
+  ```
+  
+* Push
+
+  ```bash
+  docker push waikatodatamining/mmsegmentation:0.25.0_cpu
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
   ```bash
-  docker login public.aml-repo.cms.waikato.ac.nz:443
-  ```
-  Then tag by running:
-  
-  ```bash
-  docker tag \
-    public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cpu \
-    open-mmlab/mmsegmentation:0.25.0_cpu
-  ```
-  
-* <a name="run">Run</a>
-
-  ```bash
-  docker run --shm-size 8G \
-    -v /local/dir:/container/dir -it open-mmlab/mmsegmentation:0.25.0_cpu
-  ```
-  `/local/dir:/container/dir` maps a local disk directory into a directory inside the container
-
+  docker login
+  ``` 
 
 
 ## Permissions
