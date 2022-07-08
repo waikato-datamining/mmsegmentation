@@ -213,7 +213,7 @@ You can browse the config files [here](https://github.com/open-mmlab/mmsegmentat
 * Adapt `img_dir` and `ann_dir` to suit your dataset.
 * Interval in `checkpoint_config` will determine the frequency of saving models while training 
   (10 for example will save a model after every 10 epochs).
-* In the `runner` property, change `max_iters` to how many epochs you want to train the model for.
+* In the `runner` property, change `max_iters` to how many iterations you want to train the model for.
 * Change `load_from` to the file name of the pre-trained network that you downloaded from the model zoo instead
   of downloading it automatically.
 * If you want to include the validation set, add `, ('val', 1)` to `workflow`.
