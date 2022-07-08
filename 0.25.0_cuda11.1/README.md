@@ -120,7 +120,7 @@ The following scripts are available:
       --prediction_in /path_to/test_imgs \
       --prediction_out /path_to/test_results
   ```
-  Run with -h for all available options.
+  Run with `-h` for all available options.
 
 * Predict via Redis backend
 
