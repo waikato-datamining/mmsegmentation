@@ -112,7 +112,7 @@ The following scripts are available:
 ### Build
 
 ```bash
-docker build -t open-mmlab/mmsegmentation:0.25.0_cpu .
+docker build -t mmsegmentation:0.25.0_cpu .
 ```
 
 ### Inhouse registry  

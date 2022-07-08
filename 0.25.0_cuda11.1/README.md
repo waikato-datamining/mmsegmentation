@@ -145,7 +145,7 @@ The following scripts are available:
 ### Build
 
 ```bash
-docker build -t open-mmlab/mmsegmentation:0.25.0_cuda11.1 .
+docker build -t mmsegmentation:0.25.0_cuda11.1 .
 ```
 
 ### Inhouse registry  
