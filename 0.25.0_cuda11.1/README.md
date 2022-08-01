@@ -306,3 +306,5 @@ You can test the inference of your container with the [image_demo2.py](image_dem
     --device cuda:0 \
     --output_file /workspace/demo_out.png
   ```
+
+* the model saved the result of the segmentation in `test_inference/demo_out.png` (in grayscale)  
