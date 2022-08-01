@@ -196,6 +196,51 @@ You can use [simple-redis-helper](https://pypi.org/project/simple-redis-helper/)
 and listen for image segmentation results when testing.
 
 
+## Testing inference
+
+You can test the inference of your container with the [image_demo2.py](image_demo2.py) script as follows:
+
+* create a test directory and change into it
+
+  ```bash
+  mkdir test_inference
+  cd test_inference
+  ```
+
+* create cache directory
+
+  ```bash
+  mkdir -p cache/torch
+  ```
+
+* start the container in interactive mode
+
+  ```bash
+  docker run --shm-size 8G -u $(id -u):$(id -g) -e USER=$USER \
+    -v `pwd`:/workspace \
+    -v `pwd`/cache:/.cache \
+    -v `pwd`/cache/torch:/.cache/torch \
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1 
+  ```
+
+* download a pretrained model
+
+  ```bash
+  cd /workspace
+  mim download mmsegmentation --config pspnet_r50-d8_512x1024_40k_cityscapes --dest .
+  ```
+
+* perform inference
+
+  ```bash
+  python /mmsegmentation/demo/image_demo2.py \
+    --img /mmsegmentation/demo/demo.png \
+    --config /mmsegmentation/configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py \
+    --checkpoint pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth \
+    --output_file /workspace/demo_out.png
+  ```
+
+
 ## Troubleshooting
 
 * `ValueError: SyncBatchNorm expected input tensor to be on GPU`
