@@ -30,3 +30,4 @@ COPY bash.bashrc /etc/bash.bashrc
 COPY mmseg_* /usr/bin/
 COPY predict_poll.py /mmsegmentation/tools
 COPY predict_redis.py /mmsegmentation/tools
+COPY image_demo2.py /mmsegmentation/demo
