@@ -72,7 +72,7 @@ waikatodatamining/mmsegmentation:0.25.0_cuda11.1
 
 The following scripts are available:
 
-* `mmseg_config` - for expanding/exporting default configurations (calls `/mmsegmentation/tools/misc/print_config.py`)
+* `mmseg_config` - for expanding/exporting default configurations (calls `/mmsegmentation/tools/print_config.py`)
 * `mmseg_train` - for training a model (calls `/mmsegmentation/mmseg/tools/train.py`)
 * `mmseg_predict_poll` - for applying a model to images (uses file-polling, calls `/mmsegmentation/tools/predict_poll.py`)
 * `mmseg_predict_redis` - for applying a model to images (via [Redis](https://redis.io/) backend), 
