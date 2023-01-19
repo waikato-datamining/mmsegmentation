@@ -2,7 +2,7 @@
 
 Allows processing of images with [MMSegmentation](https://github.com/open-mmlab/mmsegmentation).
 
-Uses PyTorch 1.9.0 and CUDA 11.1.
+Uses PyTorch 1.9.0 on CPU.
 
 ## Version
 
@@ -301,7 +301,7 @@ You can test the inference of your container with the [image_demo2.py](image_dem
     --img /mmsegmentation/demo/demo.png \
     --config /mmsegmentation/configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py \
     --checkpoint pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth \
-    --device cuda:0 \
+    --device cpu \
     --output_file /workspace/demo_out.png
   ```
 
