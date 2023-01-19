@@ -24,7 +24,7 @@ RUN pip install --no-cache-dir -v -e . && \
     pip install --no-cache-dir openmim==0.1.6 && \
     pip install --no-cache-dir python-image-complete "simple-file-poller>=0.0.9" && \
     pip install --no-cache-dir redis "redis-docker-harness==0.0.1" && \
-    pip install --no-cache-dir onnx==1.10.2 onnxruntime-gpu==1.10.0
+    pip install --no-cache-dir onnx==1.10.2 onnxruntime==1.10.0
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY bash.bashrc /etc/bash.bashrc
