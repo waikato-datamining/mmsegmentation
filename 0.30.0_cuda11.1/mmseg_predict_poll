@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python /mmsegmentation/tools/predict_poll.py "$@"
