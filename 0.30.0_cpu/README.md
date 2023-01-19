@@ -306,3 +306,10 @@ You can test the inference of your container with the [image_demo2.py](image_dem
   ```
 
 * the model saved the result of the segmentation in `test_inference/demo_out.png` (in grayscale)  
+
+
+## Troubleshooting
+
+* `ValueError: SyncBatchNorm expected input tensor to be on GPU`
+
+  Replace `SyncBN` with `BN` in the config file (see [here](https://github.com/open-mmlab/mmsegmentation/issues/387#issuecomment-784712980)).
