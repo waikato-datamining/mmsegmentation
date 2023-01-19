@@ -32,12 +32,10 @@ January 11th, 2023
 * Pull and run image (adjust volume mappings `-v`):
 
   ```bash
-  docker run --gpus=all --shm-size 8G \
+  docker run --shm-size 8G \
     -v /local/dir:/container/dir \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cuda11.1
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cpu
   ```
-
-  **NB:** For docker versions older than 19.03 (`docker version`), use `--runtime=nvidia` instead of `--gpus=all`.
 
 * If need be, remove all containers and images from your system:
 
@@ -50,12 +48,12 @@ January 11th, 2023
 The image is also available from [Docker hub](https://hub.docker.com/u/waikatodatamining):
 
 ```
-waikatodatamining/mmsegmentation:0.30.0_cuda11.1
+waikatodatamining/mmsegmentation:0.30.0_cpu
 ```
 
 ### Build local image
 
-* Build the image from Docker file (from within /path_to/mmsegmentation/0.30.0_cuda11.1)
+* Build the image from Docker file (from within /path_to/mmsegmentation/0.30.0_cpu)
 
   ```bash
   docker build -t mmseg .
@@ -64,7 +62,7 @@ waikatodatamining/mmsegmentation:0.30.0_cuda11.1
 * Run the container
 
   ```bash
-  docker run --gpus=all --shm-size 8G -v /local/dir:/container/dir -it mmseg
+  docker run --shm-size 8G -v /local/dir:/container/dir -it mmseg
   ```
   `/local/dir:/container/dir` maps a local disk directory into a directory inside the container
 
@@ -145,7 +143,7 @@ The following scripts are available:
 ### Build
 
 ```bash
-docker build -t mmsegmentation:0.30.0_cuda11.1 .
+docker build -t mmsegmentation:0.30.0_cpu .
 ```
 
 ### Inhouse registry  
@@ -154,14 +152,14 @@ docker build -t mmsegmentation:0.30.0_cuda11.1 .
 
   ```bash
   docker tag \
-    mmsegmentation:0.30.0_cuda11.1 \
-    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cuda11.1
+    mmsegmentation:0.30.0_cpu \
+    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cpu
   ```
   
 * Push
 
   ```bash
-  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cuda11.1
+  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cpu
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -175,14 +173,14 @@ docker build -t mmsegmentation:0.30.0_cuda11.1 .
 
   ```bash
   docker tag \
-    mmsegmentation:0.30.0_cuda11.1 \
-    waikatodatamining/mmsegmentation:0.30.0_cuda11.1
+    mmsegmentation:0.30.0_cpu \
+    waikatodatamining/mmsegmentation:0.30.0_cpu
   ```
   
 * Push
 
   ```bash
-  docker push waikatodatamining/mmsegmentation:0.30.0_cuda11.1
+  docker push waikatodatamining/mmsegmentation:0.30.0_cpu
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -282,11 +280,11 @@ You can test the inference of your container with the [image_demo2.py](image_dem
 * start the container in interactive mode
 
   ```bash
-  docker run --gpus=all --shm-size 8G -u $(id -u):$(id -g) -e USER=$USER \
+  docker run --shm-size 8G -u $(id -u):$(id -g) -e USER=$USER \
     -v `pwd`:/workspace \
     -v `pwd`/cache:/.cache \
     -v `pwd`/cache/torch:/.cache/torch \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cuda11.1 
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.30.0_cpu 
   ```
 
 * download a pretrained model
