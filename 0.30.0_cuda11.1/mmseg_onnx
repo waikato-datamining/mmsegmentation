@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python /mmsegmentation/tools/pytorch2onnx.py "$@"

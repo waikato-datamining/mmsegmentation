@@ -71,10 +71,11 @@ waikatodatamining/mmsegmentation:0.30.0_cpu
 The following scripts are available:
 
 * `mmseg_config` - for expanding/exporting default configurations (calls [print_config2.py](print_config2.py))
-* `mmseg_train` - for training a model (calls `/mmsegmentation/mmseg/tools/train.py`)
+* `mmseg_train` - for training a model (calls `/mmsegmentation/tools/train.py`)
 * `mmseg_predict_poll` - for applying a model to images (uses file-polling, calls `/mmsegmentation/tools/predict_poll.py`)
 * `mmseg_predict_redis` - for applying a model to images (via [Redis](https://redis.io/) backend), 
   add `--net=host` to the Docker options (calls `/mmsegmentation/tools/predict_redis.py`)
+* `mmseg_onnx` - for exporting pytorch models to ONNX (calls `/mmsegmentation/tools/pytorch2onnx.py`)
 
 
 ### Usage
