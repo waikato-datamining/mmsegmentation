@@ -309,3 +309,16 @@ You can test the inference of your container with the [image_demo2.py](image_dem
   ```
 
 * the model saved the result of the segmentation in `test_inference/demo_out.png` (in grayscale)  
+
+
+## Troubleshooting
+
+* Training results in a core dump with the following error message:
+
+  ```
+  File "/mmsegmentation/mmseg/models/losses/accuracy.py", line 49, in accuracy 
+    correct = correct[:, target != ignore_index]
+  ```
+  
+  Check that your PNG files with the annotations all have the correct indices
+  in their palette.
