@@ -2,9 +2,9 @@
 # Copyright (C) University of Waikato, Hamilton, NZ
 import argparse
 
-from mmcv import Config, DictAction
+from mmengine import Config, DictAction
 
-from mmseg.apis import init_segmentor
+from mmseg.apis import init_model
 
 
 def parse_args():
@@ -42,7 +42,7 @@ def main():
     cfg.dump(args.output_config)
     # dump models graph
     if args.graph:
-        model = init_segmentor(args.config, device='cpu')
+        model = init_model(args.config, device='cpu')
         print(f'Model graph:\n{str(model)}')
         with open(args.output_graph, 'w') as f:
             f.writelines(str(model))
