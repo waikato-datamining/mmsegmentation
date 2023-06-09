@@ -21,7 +21,8 @@ RUN git clone https://github.com/open-mmlab/mmsegmentation.git /mmsegmentation &
     git checkout tags/v1.0.0
 WORKDIR /mmsegmentation
 RUN pip install --no-cache-dir -v -e . && \
-    pip install --no-cache-dir openmim==0.1.6 && \
+    pip install --no-cache-dir openmim==0.3.7 && \
+    pip install --no-cache-dir mmengine==0.7.2 && \
     pip install --no-cache-dir python-image-complete "simple-file-poller>=0.0.9" && \
     pip install --no-cache-dir redis "redis-docker-harness==0.0.1" && \
     pip install --no-cache-dir onnx==1.10.2 onnxruntime==1.10.0
