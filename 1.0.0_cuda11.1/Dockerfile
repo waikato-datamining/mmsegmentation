@@ -41,6 +41,5 @@ COPY external.py /mmsegmentation/mmseg/datasets
 COPY mmseg_* /usr/bin/
 COPY predict_poll.py /mmsegmentation/tools
 COPY predict_redis.py /mmsegmentation/tools
-COPY train.py /mmsegmentation/tools
 COPY image_demo2.py /mmsegmentation/demo
 COPY print_config2.py /mmsegmentation/tools
