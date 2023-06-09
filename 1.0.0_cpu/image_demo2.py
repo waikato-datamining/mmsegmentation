@@ -4,24 +4,26 @@ import cv2
 import numpy as np
 
 from argparse import ArgumentParser
-from mmseg.apis import inference_segmentor, init_segmentor, show_result_pyplot
+from mmengine.model import revert_sync_batchnorm
+from mmseg.apis import inference_model, init_model, show_result_pyplot
 
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('--img', required=True, help='Image file')
-    parser.add_argument('--config', required=True, help='Config file')
-    parser.add_argument('--checkpoint', required=True, help='Checkpoint file')
-    parser.add_argument('--device', default='cuda:0', help='Device used for inference')
+    parser.add_argument('img', help='Image file')
+    parser.add_argument('config', help='Config file')
+    parser.add_argument('checkpoint', help='Checkpoint file')
     parser.add_argument('--output_file', required=True, help='The generated segmentation')
     parser.add_argument('--prediction_format', choices=["grayscale", "bluechannel"], default="grayscale", help='How to output the segmentation')
     args = parser.parse_args()
 
     # build the model from a config file and a checkpoint file
-    model = init_segmentor(args.config, args.checkpoint, device=args.device)
+    model = init_model(args.config, args.checkpoint, device="cpu")
+    if args.device == 'cpu':
+        model = revert_sync_batchnorm(model)
 
     # test a single image
-    result = inference_segmentor(model, args.img)
+    result = inference_model(model, args.img)
     pr_mask = result[0]
     pr_mask = np.array(pr_mask, dtype=np.uint8)
 
