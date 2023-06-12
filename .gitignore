@@ -136,6 +136,7 @@ dmypy.json
 *.pth
 psp*.py
 mmsegmentation-*/
+mmengine-*/
 mmcv-*/
 cache/
 predictions/
