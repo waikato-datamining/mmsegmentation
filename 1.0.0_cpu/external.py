@@ -315,18 +315,15 @@ class ExternalDataset(BaseDataset):
     def get_palette_for_custom_classes(self, class_names, palette=None):
 
         if palette is None:
-            if "palette" not in self._metainfo:
-                # Get random state before set seed, and restore
-                # random state later.
-                # It will prevent loss of randomness, as the palette
-                # may be different in each iteration if not specified.
-                # See: https://github.com/open-mmlab/mmdetection/issues/5844
-                state = np.random.get_state()
-                np.random.seed(42)
-                # random palette
-                palette = np.random.randint(0, 255, size=(len(class_names), 3))
-                np.random.set_state(state)
-            else:
-                palette = self._metainfo["palette"]
+            # Get random state before set seed, and restore
+            # random state later.
+            # It will prevent loss of randomness, as the palette
+            # may be different in each iteration if not specified.
+            # See: https://github.com/open-mmlab/mmdetection/issues/5844
+            state = np.random.get_state()
+            np.random.seed(42)
+            # random palette
+            palette = np.random.randint(0, 255, size=(len(class_names), 3))
+            np.random.set_state(state)
 
         return palette
