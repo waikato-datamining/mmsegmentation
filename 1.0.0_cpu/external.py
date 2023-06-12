@@ -16,7 +16,7 @@ MMSEG_CLASSES = "MMSEG_CLASSES"
 
 
 @DATASETS.register_module()
-class BaseSegDataset(BaseDataset):
+class ExternalDataset(BaseDataset):
     """Custom dataset for semantic segmentation. An example of file structure
     is as followed.
 
