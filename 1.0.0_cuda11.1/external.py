@@ -315,7 +315,7 @@ class ExternalDataset(BaseDataset):
     def get_palette_for_custom_classes(self, class_names, palette=None):
 
         if palette is None:
-            if self.PALETTE is None:
+            if "palette" not in self._metainfo:
                 # Get random state before set seed, and restore
                 # random state later.
                 # It will prevent loss of randomness, as the palette
@@ -327,6 +327,6 @@ class ExternalDataset(BaseDataset):
                 palette = np.random.randint(0, 255, size=(len(class_names), 3))
                 np.random.set_state(state)
             else:
-                palette = self.PALETTE
+                palette = self._metainfo["palette"]
 
         return palette
