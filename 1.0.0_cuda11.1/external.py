@@ -314,16 +314,7 @@ class ExternalDataset(BaseDataset):
 
     def get_palette_for_custom_classes(self, class_names, palette=None):
 
-        if self.label_map is not None:
-            # return subset of palette
-            palette = []
-            for old_id, new_id in sorted(
-                    self.label_map.items(), key=lambda x: x[1]):
-                if new_id != -1:
-                    palette.append(self.PALETTE[old_id])
-            palette = type(self.PALETTE)(palette)
-
-        elif palette is None:
+        if palette is None:
             if self.PALETTE is None:
                 # Get random state before set seed, and restore
                 # random state later.
