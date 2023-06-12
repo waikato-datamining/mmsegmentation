@@ -25,7 +25,7 @@ def process_image(msg_cont):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         prediction = inference_model(config.model, image)
-        pr_mask = prediction[0]
+        pr_mask = prediction.pred_sem_seg
         pr_mask= np.array(pr_mask, dtype=np.uint8)
 
         # not grayscale?

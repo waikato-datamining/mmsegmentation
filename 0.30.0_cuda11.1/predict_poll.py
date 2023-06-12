@@ -45,7 +45,7 @@ def process_image(fname, output_dir, poller):
 
     try:
         prediction = inference_segmentor(poller.params.model, fname)
-        pr_mask = prediction[0]
+        pr_mask = prediction.pred_sem_seg
         pr_mask = np.array(pr_mask, dtype=np.uint8)
         
         # not grayscale?
