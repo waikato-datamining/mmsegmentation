@@ -1,29 +1,24 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-# Copyright (c) University of Waikato, Hamilton, NZ
+import copy
 import os
 import os.path as osp
-import warnings
-from collections import OrderedDict
+from typing import Callable, Dict, List, Optional, Sequence, Union
 
-import mmcv
+import mmengine
+import mmengine.fileio as fileio
 import numpy as np
-from mmcv.utils import print_log
-from prettytable import PrettyTable
-from torch.utils.data import Dataset
+from mmengine.dataset import BaseDataset, Compose
 
-from mmseg.core import eval_metrics, intersect_and_union, pre_eval_to_metrics
-from mmseg.utils import get_root_logger
-from .builder import DATASETS
-from .pipelines import Compose, LoadAnnotations
+from mmseg.registry import DATASETS
 
 
 MMSEG_CLASSES = "MMSEG_CLASSES"
 
 
 @DATASETS.register_module()
-class ExternalDataset(Dataset):
-    """External dataset (based on CustomDataset class) for semantic segmentation.
-    An example of file structure is as followed.
+class BaseSegDataset(BaseDataset):
+    """Custom dataset for semantic segmentation. An example of file structure
+    is as followed.
 
     .. code-block:: none
 
@@ -42,279 +37,237 @@ class ExternalDataset(Dataset):
         │   │   │   │   ├── zzz.png
         │   │   │   ├── val
 
-    The img/gt_semantic_seg pair of CustomDataset should be of the same
+    The img/gt_semantic_seg pair of BaseSegDataset should be of the same
     except suffix. A valid img/gt_semantic_seg filename pair should be like
     ``xxx{img_suffix}`` and ``xxx{seg_map_suffix}`` (extension is also included
     in the suffix). If split is given, then ``xxx`` is specified in txt file.
     Otherwise, all files in ``img_dir/``and ``ann_dir`` will be loaded.
     Please refer to ``docs/en/tutorials/new_dataset.md`` for more details.
 
-    Class labels are obtained through the MMSEG_CLASSES environment variable:
-    - contains comma-separated list of labels
-    - contains a file name pointing to text file:
-      - single line with comma-separated list of labels
-      - one label per line
 
     Args:
-        pipeline (list[dict]): Processing pipeline
-        img_dir (str): Path to image directory
+        ann_file (str): Annotation file path. Defaults to ''.
+        metainfo (dict, optional): Meta information for dataset, such as
+            specify classes to load. Defaults to None.
+        data_root (str, optional): The root directory for ``data_prefix`` and
+            ``ann_file``. Defaults to None.
+        data_prefix (dict, optional): Prefix for training data. Defaults to
+            dict(img_path=None, seg_map_path=None).
         img_suffix (str): Suffix of images. Default: '.jpg'
-        ann_dir (str, optional): Path to annotation directory. Default: None
         seg_map_suffix (str): Suffix of segmentation maps. Default: '.png'
-        split (str, optional): Split txt file. If split is specified, only
-            file with suffix in the splits will be loaded. Otherwise, all
-            images in img_dir/ann_dir will be loaded. Default: None
-        data_root (str, optional): Data root for img_dir/ann_dir. Default:
-            None.
-        test_mode (bool): If test_mode=True, gt wouldn't be loaded.
+        filter_cfg (dict, optional): Config for filter data. Defaults to None.
+        indices (int or Sequence[int], optional): Support using first few
+            data in annotation file to facilitate training/testing on a smaller
+            dataset. Defaults to None which means using all ``data_infos``.
+        serialize_data (bool, optional): Whether to hold memory using
+            serialized objects, when enabled, data loader workers can use
+            shared RAM from master process instead of making a copy. Defaults
+            to True.
+        pipeline (list, optional): Processing pipeline. Defaults to [].
+        test_mode (bool, optional): ``test_mode=True`` means in test phase.
+            Defaults to False.
+        lazy_init (bool, optional): Whether to load annotation during
+            instantiation. In some cases, such as visualization, only the meta
+            information of the dataset is needed, which is not necessary to
+            load annotation file. ``Basedataset`` can skip load annotations to
+            save time by set ``lazy_init=True``. Defaults to False.
+        max_refetch (int, optional): If ``Basedataset.prepare_data`` get a
+            None img. The maximum extra number of cycles to get a valid
+            image. Defaults to 1000.
         ignore_index (int): The label index to be ignored. Default: 255
         reduce_zero_label (bool): Whether to mark label zero as ignored.
-            Default: False
-        palette (Sequence[Sequence[int]]] | np.ndarray | None):
-            The palette of segmentation map. If None is given, and
-            self.PALETTE is None, random palette will be generated.
-            Default: None
-        gt_seg_map_loader_cfg (dict, optional): build LoadAnnotations to
-            load gt for evaluation, load from disk by default. Default: None.
-        file_client_args (dict): Arguments to instantiate a FileClient.
-            See :class:`mmcv.fileio.FileClient` for details.
-            Defaults to ``dict(backend='disk')``.
+            Default to False.
+        backend_args (dict, Optional): Arguments to instantiate a file backend.
+            See https://mmengine.readthedocs.io/en/latest/api/fileio.htm
+            for details. Defaults to None.
+            Notes: mmcv>=2.0.0rc4, mmengine>=0.2.0 required.
     """
-
-    CLASSES = None
-
-    PALETTE = None
+    METAINFO: dict = dict()
 
     def __init__(self,
-                 pipeline,
-                 img_dir,
-                 ann_dir=None,
-                 split=None,
-                 data_root=None,
-                 test_mode=False,
-                 ignore_index=255,
-                 reduce_zero_label=False,
-                 palette=None,
-                 gt_seg_map_loader_cfg=None):
-        self.pipeline = Compose(pipeline)
-        self.img_dir = img_dir
-        self.img_suffix = '.jpg'
-        self.ann_dir = ann_dir
-        self.seg_map_suffix = '.png'
-        self.split = split
-        self.data_root = data_root
-        self.test_mode = test_mode
+                 ann_file: str = '',
+                 data_root: Optional[str] = None,
+                 data_prefix: dict = dict(img_path='', seg_map_path=''),
+                 filter_cfg: Optional[dict] = None,
+                 indices: Optional[Union[int, Sequence[int]]] = None,
+                 serialize_data: bool = True,
+                 pipeline: List[Union[dict, Callable]] = [],
+                 test_mode: bool = False,
+                 lazy_init: bool = False,
+                 max_refetch: int = 1000,
+                 ignore_index: int = 255,
+                 reduce_zero_label: bool = False,
+                 backend_args: Optional[dict] = None) -> None:
+
+        self.img_suffix = ".jpg"
+        self.seg_map_suffix = ".png"
         self.ignore_index = ignore_index
         self.reduce_zero_label = reduce_zero_label
-        self.label_map = None
-        self.CLASSES, self.PALETTE = self.get_classes_and_palette(palette)
-        self.gt_seg_map_loader = LoadAnnotations(
-        ) if gt_seg_map_loader_cfg is None else LoadAnnotations(
-            **gt_seg_map_loader_cfg)
+        self.backend_args = backend_args.copy() if backend_args else None
 
-        self.file_client_args = dict(backend='disk')
-        self.file_client = mmcv.FileClient.infer_client(self.file_client_args)
+        self.data_root = data_root
+        self.data_prefix = copy.copy(data_prefix)
+        self.ann_file = ann_file
+        self.filter_cfg = copy.deepcopy(filter_cfg)
+        self._indices = indices
+        self.serialize_data = serialize_data
+        self.test_mode = test_mode
+        self.max_refetch = max_refetch
+        self.data_list: List[dict] = []
+        self.data_bytes: np.ndarray
+
+        # Set meta information.
+        metainfo = self.get_classes_and_palette()
+        self._metainfo = self._load_metainfo(copy.deepcopy(metainfo))
+
+        # Get label map for custom classes
+        new_classes = self._metainfo.get('classes', None)
+        self.label_map = self.get_label_map(new_classes)
+        self._metainfo.update(
+            dict(
+                label_map=self.label_map,
+                reduce_zero_label=self.reduce_zero_label))
+
+        # Update palette based on label map or generate palette
+        # if it is not defined
+        updated_palette = self._update_palette()
+        self._metainfo.update(dict(palette=updated_palette))
+
+        # Join paths.
+        if self.data_root is not None:
+            self._join_prefix()
+
+        # Build pipeline.
+        self.pipeline = Compose(pipeline)
+        # Full initialize the dataset.
+        if not lazy_init:
+            self.full_init()
 
         if test_mode:
-            assert self.CLASSES is not None, \
-                '`cls.CLASSES` or `classes` should be specified when testing'
+            assert self._metainfo.get('classes') is not None, \
+                'dataset metainfo `classes` should be specified when testing'
 
-        # join paths if data_root is specified
-        if self.data_root is not None:
-            if not osp.isabs(self.img_dir):
-                self.img_dir = osp.join(self.data_root, self.img_dir)
-            if not (self.ann_dir is None or osp.isabs(self.ann_dir)):
-                self.ann_dir = osp.join(self.data_root, self.ann_dir)
-            if not (self.split is None or osp.isabs(self.split)):
-                self.split = osp.join(self.data_root, self.split)
+    @classmethod
+    def get_label_map(cls,
+                      new_classes: Optional[Sequence] = None
+                      ) -> Union[Dict, None]:
+        """Require label mapping.
 
-        # load annotations
-        self.img_infos = self.load_annotations(self.img_dir, self.img_suffix,
-                                               self.ann_dir,
-                                               self.seg_map_suffix, self.split)
-
-    def __len__(self):
-        """Total number of samples of data."""
-        return len(self.img_infos)
-
-    def load_annotations(self, img_dir, img_suffix, ann_dir, seg_map_suffix,
-                         split):
-        """Load annotation from directory.
+        The ``label_map`` is a dictionary, its keys are the old label ids and
+        its values are the new label ids, and is used for changing pixel
+        labels in load_annotations. If and only if old classes in cls.METAINFO
+        is not equal to new classes in self._metainfo and nether of them is not
+        None, `label_map` is not None.
 
         Args:
-            img_dir (str): Path to image directory
-            img_suffix (str): Suffix of images.
-            ann_dir (str|None): Path to annotation directory.
-            seg_map_suffix (str|None): Suffix of segmentation maps.
-            split (str|None): Split txt file. If split is specified, only file
-                with suffix in the splits will be loaded. Otherwise, all images
-                in img_dir/ann_dir will be loaded. Default: None
+            new_classes (list, tuple, optional): The new classes name from
+                metainfo. Default to None.
+
 
         Returns:
-            list[dict]: All image info of dataset.
+            dict, optional: The mapping from old classes in cls.METAINFO to
+                new classes in self._metainfo
         """
+        old_classes = cls.METAINFO.get('classes', None)
+        if (new_classes is not None and old_classes is not None
+                and list(new_classes) != list(old_classes)):
 
-        img_infos = []
-        if split is not None:
-            lines = mmcv.list_from_file(
-                split, file_client_args=self.file_client_args)
+            label_map = {}
+            if not set(new_classes).issubset(cls.METAINFO['classes']):
+                raise ValueError(
+                    f'new classes {new_classes} is not a '
+                    f'subset of classes {old_classes} in METAINFO.')
+            for i, c in enumerate(old_classes):
+                if c not in new_classes:
+                    label_map[i] = 255
+                else:
+                    label_map[i] = new_classes.index(c)
+            return label_map
+        else:
+            return None
+
+    def _update_palette(self) -> list:
+        """Update palette after loading metainfo.
+
+        If length of palette is equal to classes, just return the palette.
+        If palette is not defined, it will randomly generate a palette.
+        If classes is updated by customer, it will return the subset of
+        palette.
+
+        Returns:
+            Sequence: Palette for current dataset.
+        """
+        palette = self._metainfo.get('palette', [])
+        classes = self._metainfo.get('classes', [])
+        # palette does match classes
+        if len(palette) == len(classes):
+            return palette
+
+        if len(palette) == 0:
+            # Get random state before set seed, and restore
+            # random state later.
+            # It will prevent loss of randomness, as the palette
+            # may be different in each iteration if not specified.
+            # See: https://github.com/open-mmlab/mmdetection/issues/5844
+            state = np.random.get_state()
+            np.random.seed(42)
+            # random palette
+            new_palette = np.random.randint(
+                0, 255, size=(len(classes), 3)).tolist()
+            np.random.set_state(state)
+        elif len(palette) >= len(classes) and self.label_map is not None:
+            new_palette = []
+            # return subset of palette
+            for old_id, new_id in sorted(
+                    self.label_map.items(), key=lambda x: x[1]):
+                if new_id != 255:
+                    new_palette.append(palette[old_id])
+            new_palette = type(palette)(new_palette)
+        else:
+            raise ValueError('palette does not match classes '
+                             f'as metainfo is {self._metainfo}.')
+        return new_palette
+
+    def load_data_list(self) -> List[dict]:
+        """Load annotation from directory or annotation file.
+
+        Returns:
+            list[dict]: All data info of dataset.
+        """
+        data_list = []
+        img_dir = self.data_prefix.get('img_path', None)
+        ann_dir = self.data_prefix.get('seg_map_path', None)
+        if osp.isfile(self.ann_file):
+            lines = mmengine.list_from_file(
+                self.ann_file, backend_args=self.backend_args)
             for line in lines:
                 img_name = line.strip()
-                img_info = dict(filename=img_name + img_suffix)
+                data_info = dict(
+                    img_path=osp.join(img_dir, img_name + self.img_suffix))
                 if ann_dir is not None:
-                    seg_map = img_name + seg_map_suffix
-                    img_info['ann'] = dict(seg_map=seg_map)
-                img_infos.append(img_info)
+                    seg_map = img_name + self.seg_map_suffix
+                    data_info['seg_map_path'] = osp.join(ann_dir, seg_map)
+                data_info['label_map'] = self.label_map
+                data_info['reduce_zero_label'] = self.reduce_zero_label
+                data_info['seg_fields'] = []
+                data_list.append(data_info)
         else:
-            for img in self.file_client.list_dir_or_file(
+            for img in fileio.list_dir_or_file(
                     dir_path=img_dir,
                     list_dir=False,
-                    suffix=img_suffix,
-                    recursive=True):
-                img_info = dict(filename=img)
+                    suffix=self.img_suffix,
+                    recursive=True,
+                    backend_args=self.backend_args):
+                data_info = dict(img_path=osp.join(img_dir, img))
                 if ann_dir is not None:
-                    seg_map = img.replace(img_suffix, seg_map_suffix)
-                    img_info['ann'] = dict(seg_map=seg_map)
-                img_infos.append(img_info)
-            img_infos = sorted(img_infos, key=lambda x: x['filename'])
-
-        print_log(f'Loaded {len(img_infos)} images', logger=get_root_logger())
-        return img_infos
-
-    def get_ann_info(self, idx):
-        """Get annotation by index.
-
-        Args:
-            idx (int): Index of data.
-
-        Returns:
-            dict: Annotation info of specified index.
-        """
-
-        return self.img_infos[idx]['ann']
-
-    def pre_pipeline(self, results):
-        """Prepare results dict for pipeline."""
-        results['seg_fields'] = []
-        results['img_prefix'] = self.img_dir
-        results['seg_prefix'] = self.ann_dir
-        if self.custom_classes:
-            results['label_map'] = self.label_map
-
-    def __getitem__(self, idx):
-        """Get training/test data after pipeline.
-
-        Args:
-            idx (int): Index of data.
-
-        Returns:
-            dict: Training/test data (with annotation if `test_mode` is set
-                False).
-        """
-
-        if self.test_mode:
-            return self.prepare_test_img(idx)
-        else:
-            return self.prepare_train_img(idx)
-
-    def prepare_train_img(self, idx):
-        """Get training data and annotations after pipeline.
-
-        Args:
-            idx (int): Index of data.
-
-        Returns:
-            dict: Training data and annotation after pipeline with new keys
-                introduced by pipeline.
-        """
-
-        img_info = self.img_infos[idx]
-        ann_info = self.get_ann_info(idx)
-        results = dict(img_info=img_info, ann_info=ann_info)
-        self.pre_pipeline(results)
-        return self.pipeline(results)
-
-    def prepare_test_img(self, idx):
-        """Get testing data after pipeline.
-
-        Args:
-            idx (int): Index of data.
-
-        Returns:
-            dict: Testing data after pipeline with new keys introduced by
-                pipeline.
-        """
-
-        img_info = self.img_infos[idx]
-        results = dict(img_info=img_info)
-        self.pre_pipeline(results)
-        return self.pipeline(results)
-
-    def format_results(self, results, imgfile_prefix, indices=None, **kwargs):
-        """Place holder to format result to dataset specific output."""
-        raise NotImplementedError
-
-    def get_gt_seg_map_by_idx(self, index):
-        """Get one ground truth segmentation map for evaluation."""
-        ann_info = self.get_ann_info(index)
-        results = dict(ann_info=ann_info)
-        self.pre_pipeline(results)
-        self.gt_seg_map_loader(results)
-        return results['gt_semantic_seg']
-
-    def get_gt_seg_maps(self, efficient_test=None):
-        """Get ground truth segmentation maps for evaluation."""
-        if efficient_test is not None:
-            warnings.warn(
-                'DeprecationWarning: ``efficient_test`` has been deprecated '
-                'since MMSeg v0.16, the ``get_gt_seg_maps()`` is CPU memory '
-                'friendly by default. ')
-
-        for idx in range(len(self)):
-            ann_info = self.get_ann_info(idx)
-            results = dict(ann_info=ann_info)
-            self.pre_pipeline(results)
-            self.gt_seg_map_loader(results)
-            yield results['gt_semantic_seg']
-
-    def pre_eval(self, preds, indices):
-        """Collect eval result from each iteration.
-
-        Args:
-            preds (list[torch.Tensor] | torch.Tensor): the segmentation logit
-                after argmax, shape (N, H, W).
-            indices (list[int] | int): the prediction related ground truth
-                indices.
-
-        Returns:
-            list[torch.Tensor]: (area_intersect, area_union, area_prediction,
-                area_ground_truth).
-        """
-        # In order to compat with batch inference
-        if not isinstance(indices, list):
-            indices = [indices]
-        if not isinstance(preds, list):
-            preds = [preds]
-
-        pre_eval_results = []
-
-        for pred, index in zip(preds, indices):
-            seg_map = self.get_gt_seg_map_by_idx(index)
-            pre_eval_results.append(
-                intersect_and_union(
-                    pred,
-                    seg_map,
-                    len(self.CLASSES),
-                    self.ignore_index,
-                    # as the labels has been converted when dataset initialized
-                    # in `get_palette_for_custom_classes ` this `label_map`
-                    # should be `dict()`, see
-                    # https://github.com/open-mmlab/mmsegmentation/issues/1415
-                    # for more ditails
-                    label_map=dict(),
-                    reduce_zero_label=self.reduce_zero_label))
-
-        return pre_eval_results
+                    seg_map = img.replace(self.img_suffix, self.seg_map_suffix)
+                    data_info['seg_map_path'] = osp.join(ann_dir, seg_map)
+                data_info['label_map'] = self.label_map
+                data_info['reduce_zero_label'] = self.reduce_zero_label
+                data_info['seg_fields'] = []
+                data_list.append(data_info)
+            data_list = sorted(data_list, key=lambda x: x['img_path'])
+        return data_list
 
     def load_class_labels(self):
         """
@@ -357,7 +310,7 @@ class ExternalDataset(Dataset):
         class_names = self.load_class_labels()
         palette = self.get_palette_for_custom_classes(class_names, palette)
 
-        return class_names, palette
+        return dict(classes=class_names, palette=palette)
 
     def get_palette_for_custom_classes(self, class_names, palette=None):
 
@@ -386,104 +339,3 @@ class ExternalDataset(Dataset):
                 palette = self.PALETTE
 
         return palette
-
-    def evaluate(self,
-                 results,
-                 metric='mIoU',
-                 logger=None,
-                 gt_seg_maps=None,
-                 **kwargs):
-        """Evaluate the dataset.
-
-        Args:
-            results (list[tuple[torch.Tensor]] | list[str]): per image pre_eval
-                 results or predict segmentation map for computing evaluation
-                 metric.
-            metric (str | list[str]): Metrics to be evaluated. 'mIoU',
-                'mDice' and 'mFscore' are supported.
-            logger (logging.Logger | None | str): Logger used for printing
-                related information during evaluation. Default: None.
-            gt_seg_maps (generator[ndarray]): Custom gt seg maps as input,
-                used in ConcatDataset
-
-        Returns:
-            dict[str, float]: Default metrics.
-        """
-        if isinstance(metric, str):
-            metric = [metric]
-        allowed_metrics = ['mIoU', 'mDice', 'mFscore']
-        if not set(metric).issubset(set(allowed_metrics)):
-            raise KeyError('metric {} is not supported'.format(metric))
-
-        eval_results = {}
-        # test a list of files
-        if mmcv.is_list_of(results, np.ndarray) or mmcv.is_list_of(
-                results, str):
-            if gt_seg_maps is None:
-                gt_seg_maps = self.get_gt_seg_maps()
-            num_classes = len(self.CLASSES)
-            ret_metrics = eval_metrics(
-                results,
-                gt_seg_maps,
-                num_classes,
-                self.ignore_index,
-                metric,
-                label_map=dict(),
-                reduce_zero_label=self.reduce_zero_label)
-        # test a list of pre_eval_results
-        else:
-            ret_metrics = pre_eval_to_metrics(results, metric)
-
-        # Because dataset.CLASSES is required for per-eval.
-        if self.CLASSES is None:
-            class_names = tuple(range(num_classes))
-        else:
-            class_names = self.CLASSES
-
-        # summary table
-        ret_metrics_summary = OrderedDict({
-            ret_metric: np.round(np.nanmean(ret_metric_value) * 100, 2)
-            for ret_metric, ret_metric_value in ret_metrics.items()
-        })
-
-        # each class table
-        ret_metrics.pop('aAcc', None)
-        ret_metrics_class = OrderedDict({
-            ret_metric: np.round(ret_metric_value * 100, 2)
-            for ret_metric, ret_metric_value in ret_metrics.items()
-        })
-        ret_metrics_class.update({'Class': class_names})
-        ret_metrics_class.move_to_end('Class', last=False)
-
-        # for logger
-        class_table_data = PrettyTable()
-        for key, val in ret_metrics_class.items():
-            class_table_data.add_column(key, val)
-
-        summary_table_data = PrettyTable()
-        for key, val in ret_metrics_summary.items():
-            if key == 'aAcc':
-                summary_table_data.add_column(key, [val])
-            else:
-                summary_table_data.add_column('m' + key, [val])
-
-        print_log('per class results:', logger)
-        print_log('\n' + class_table_data.get_string(), logger=logger)
-        print_log('Summary:', logger)
-        print_log('\n' + summary_table_data.get_string(), logger=logger)
-
-        # each metric dict
-        for key, value in ret_metrics_summary.items():
-            if key == 'aAcc':
-                eval_results[key] = value / 100.0
-            else:
-                eval_results['m' + key] = value / 100.0
-
-        ret_metrics_class.pop('Class', None)
-        for key, value in ret_metrics_class.items():
-            eval_results.update({
-                key + '.' + str(name): value[idx] / 100.0
-                for idx, name in enumerate(class_names)
-            })
-
-        return eval_results
