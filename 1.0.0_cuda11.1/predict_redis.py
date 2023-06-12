@@ -4,7 +4,7 @@ import numpy as np
 import traceback
 import cv2
 
-from mmseg.apis import inference_segmentor, init_segmentor
+from mmseg.apis import inference_model, init_model
 from rdh import Container, MessageContainer, create_parser, configure_redis, run_harness, log
 
 
@@ -24,7 +24,7 @@ def process_image(msg_cont):
         image = cv2.imdecode(array, cv2.IMREAD_COLOR)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        prediction = inference_segmentor(config.model, image)
+        prediction = inference_model(config.model, image)
         pr_mask = prediction[0]
         pr_mask= np.array(pr_mask, dtype=np.uint8)
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     parsed = parser.parse_args()
 
     try:
-        model = init_segmentor(parsed.config, parsed.model, device=parsed.device)
+        model = init_model(parsed.config, parsed.model, device=parsed.device)
 
         config = Container()
         config.model = model

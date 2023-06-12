@@ -4,7 +4,7 @@ import argparse
 from image_complete import auto
 import traceback
 
-from mmseg.apis import inference_segmentor, init_segmentor
+from mmseg.apis import inference_model, init_model
 import cv2
 from sfp import Poller
 
@@ -44,7 +44,7 @@ def process_image(fname, output_dir, poller):
     result = []
 
     try:
-        prediction = inference_segmentor(poller.params.model, fname)
+        prediction = inference_model(poller.params.model, fname)
         pr_mask = prediction[0]
         pr_mask = np.array(pr_mask, dtype=np.uint8)
         
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     parsed = parser.parse_args()
 
     try:
-        model = init_segmentor(parsed.config, parsed.model, device="cpu")
+        model = init_model(parsed.config, parsed.model, device="cpu")
 
         # Performing the prediction and producing the csv files
         predict_on_images(parsed.prediction_in, model, parsed.prediction_out, parsed.prediction_tmp,
