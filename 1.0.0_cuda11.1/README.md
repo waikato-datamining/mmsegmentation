@@ -322,3 +322,7 @@ You can test the inference of your container with the [image_demo2.py](image_dem
   
   Check that your PNG files with the annotations all have the correct indices
   in their palette.
+
+* Training with only a single class:
+
+  set `num_classes=2` and add parameter `use_sigmoid=False` to the loss function
