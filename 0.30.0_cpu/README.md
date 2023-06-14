@@ -76,6 +76,7 @@ The following scripts are available:
 * `mmseg_predict_redis` - for applying a model to images (via [Redis](https://redis.io/) backend), 
   add `--net=host` to the Docker options (calls `/mmsegmentation/tools/predict_redis.py`)
 * `mmseg_onnx` - for exporting pytorch models to ONNX (calls `/mmsegmentation/tools/pytorch2onnx.py`)
+* `indexed-png-stats` - can output statistics for datasets, i.e., listing the pixel counts per PNG index (for quality checks) 
 
 
 ### Usage

@@ -26,7 +26,8 @@ RUN pip install --no-cache-dir mmcv==2.0.0rc4 \
     pip install --no-cache-dir -v -e . && \
     pip install --no-cache-dir python-image-complete "simple-file-poller>=0.0.9" && \
     pip install --no-cache-dir redis "redis-docker-harness==0.0.1" && \
-    pip install --no-cache-dir onnx==1.10.2 onnxruntime==1.10.0
+    pip install --no-cache-dir onnx==1.10.2 onnxruntime==1.10.0 && \
+    pip install --no-cache-dir indexed-png-stats==0.0.1
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY bash.bashrc /etc/bash.bashrc
