@@ -327,3 +327,5 @@ You can test the inference of your container with the [image_demo2.py](image_dem
 * Training with only a single class:
 
   set `num_classes=2` and add parameter `use_sigmoid=False` to the loss function
+
+* Binary segmentation tips: [1](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/faq.md#how-to-handle-binary-segmentation-task), [2](https://github.com/open-mmlab/mmsegmentation/discussions/2757)
