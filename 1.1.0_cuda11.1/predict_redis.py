@@ -26,7 +26,8 @@ def process_image(msg_cont):
 
         prediction = inference_model(config.model, image)
         pr_mask = prediction.pred_sem_seg
-        pr_mask = np.array(pr_mask.values()[0], dtype=np.uint8)
+        pr_mask = np.array(pr_mask.cpu().values()[0], dtype=np.uint8)
+        pr_mask = np.transpose(pr_mask, (1, 2, 0))
 
         # not grayscale?
         if config.prediction_format == "bluechannel":
