@@ -9,14 +9,14 @@ Uses PyTorch 1.9.0 and CUDA 11.1.
 MMSegmentation github repo tag/hash:
 
 ```
-v1.0.0
-b600f7cb26829afa2c785af41755391626fbb446
+v1.1.0
+00790766aff22bd6470dbbd9e89ea40685008395
 ```
 
 and timestamp:
 
 ```
-April 6th, 2023
+July 4th, 2023
 ```
 
 ## Docker
@@ -34,7 +34,7 @@ April 6th, 2023
   ```bash
   docker run --gpus=all --shm-size 8G \
     -v /local/dir:/container/dir \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cuda11.1
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cuda11.1
   ```
 
   **NB:** For docker versions older than 19.03 (`docker version`), use `--runtime=nvidia` instead of `--gpus=all`.
@@ -50,12 +50,12 @@ April 6th, 2023
 The image is also available from [Docker hub](https://hub.docker.com/u/waikatodatamining):
 
 ```
-waikatodatamining/mmsegmentation:1.0.0_cuda11.1
+waikatodatamining/mmsegmentation:1.1.0_cuda11.1
 ```
 
 ### Build local image
 
-* Build the image from Docker file (from within /path_to/mmsegmentation/1.0.0_cuda11.1)
+* Build the image from Docker file (from within /path_to/mmsegmentation/1.1.0_cuda11.1)
 
   ```bash
   docker build -t mmseg .
@@ -147,7 +147,7 @@ The following scripts are available:
 ### Build
 
 ```bash
-docker build -t mmsegmentation:1.0.0_cuda11.1 .
+docker build -t mmsegmentation:1.1.0_cuda11.1 .
 ```
 
 ### Inhouse registry  
@@ -156,14 +156,14 @@ docker build -t mmsegmentation:1.0.0_cuda11.1 .
 
   ```bash
   docker tag \
-    mmsegmentation:1.0.0_cuda11.1 \
-    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cuda11.1
+    mmsegmentation:1.1.0_cuda11.1 \
+    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cuda11.1
   ```
   
 * Push
 
   ```bash
-  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cuda11.1
+  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cuda11.1
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -177,14 +177,14 @@ docker build -t mmsegmentation:1.0.0_cuda11.1 .
 
   ```bash
   docker tag \
-    mmsegmentation:1.0.0_cuda11.1 \
-    waikatodatamining/mmsegmentation:1.0.0_cuda11.1
+    mmsegmentation:1.1.0_cuda11.1 \
+    waikatodatamining/mmsegmentation:1.1.0_cuda11.1
   ```
   
 * Push
 
   ```bash
-  docker push waikatodatamining/mmsegmentation:1.0.0_cuda11.1
+  docker push waikatodatamining/mmsegmentation:1.1.0_cuda11.1
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -288,7 +288,7 @@ You can test the inference of your container with the [image_demo2.py](image_dem
     -v `pwd`:/workspace \
     -v `pwd`/cache:/.cache \
     -v `pwd`/cache/torch:/.cache/torch \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cuda11.1 
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cuda11.1 
   ```
 
 * download a pretrained model

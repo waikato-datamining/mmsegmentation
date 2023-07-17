@@ -25,8 +25,8 @@ def process_image(msg_cont):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         prediction = inference_model(config.model, image)
-        pr_mask = prediction[0]
-        pr_mask= np.array(pr_mask, dtype=np.uint8)
+        pr_mask = prediction.pred_sem_seg
+        pr_mask = np.array(pr_mask.values()[0], dtype=np.uint8)
 
         # not grayscale?
         if config.prediction_format == "bluechannel":
@@ -54,12 +54,13 @@ if __name__ == '__main__':
     parser = create_parser('MMSegmentation - Prediction (Redis)', prog="mmseg_predict_redis", prefix="redis_")
     parser.add_argument('--model', help='Path to the trained model checkpoint', required=True, default=None)
     parser.add_argument('--config', help='Path to the config file', required=True, default=None)
+    parser.add_argument('--device', help='The CUDA device to use', default="cuda:0")
     parser.add_argument('--prediction_format', metavar='FORMAT', default="grayscale", choices=["grayscale", "bluechannel"], help='The format for the prediction images')
     parser.add_argument('--verbose', action='store_true', help='Whether to output more logging info', required=False, default=False)
     parsed = parser.parse_args()
 
     try:
-        model = init_model(parsed.config, parsed.model, device="cpu")
+        model = init_model(parsed.config, parsed.model, device=parsed.device)
 
         config = Container()
         config.model = model

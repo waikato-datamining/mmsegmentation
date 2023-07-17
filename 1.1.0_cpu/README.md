@@ -9,14 +9,14 @@ Uses PyTorch 1.9.0 on CPU.
 MMSegmentation github repo tag/hash:
 
 ```
-v1.0.0
-b600f7cb26829afa2c785af41755391626fbb446
+v1.1.0
+00790766aff22bd6470dbbd9e89ea40685008395
 ```
 
 and timestamp:
 
 ```
-April 6th, 2023
+July 4th, 2023
 ```
 
 ## Docker
@@ -34,7 +34,7 @@ April 6th, 2023
   ```bash
   docker run --shm-size 8G \
     -v /local/dir:/container/dir \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cpu
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cpu
   ```
 
 * If need be, remove all containers and images from your system:
@@ -48,12 +48,12 @@ April 6th, 2023
 The image is also available from [Docker hub](https://hub.docker.com/u/waikatodatamining):
 
 ```
-waikatodatamining/mmsegmentation:1.0.0_cpu
+waikatodatamining/mmsegmentation:1.1.0_cpu
 ```
 
 ### Build local image
 
-* Build the image from Docker file (from within /path_to/mmsegmentation/1.0.0_cpu)
+* Build the image from Docker file (from within /path_to/mmsegmentation/1.1.0_cpu)
 
   ```bash
   docker build -t mmseg .
@@ -145,7 +145,7 @@ The following scripts are available:
 ### Build
 
 ```bash
-docker build -t mmsegmentation:1.0.0_cpu .
+docker build -t mmsegmentation:1.1.0_cpu .
 ```
 
 ### Inhouse registry  
@@ -154,14 +154,14 @@ docker build -t mmsegmentation:1.0.0_cpu .
 
   ```bash
   docker tag \
-    mmsegmentation:1.0.0_cpu \
-    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cpu
+    mmsegmentation:1.1.0_cpu \
+    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cpu
   ```
   
 * Push
 
   ```bash
-  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cpu
+  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cpu
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -175,14 +175,14 @@ docker build -t mmsegmentation:1.0.0_cpu .
 
   ```bash
   docker tag \
-    mmsegmentation:1.0.0_cpu \
-    waikatodatamining/mmsegmentation:1.0.0_cpu
+    mmsegmentation:1.1.0_cpu \
+    waikatodatamining/mmsegmentation:1.1.0_cpu
   ```
   
 * Push
 
   ```bash
-  docker push waikatodatamining/mmsegmentation:1.0.0_cpu
+  docker push waikatodatamining/mmsegmentation:1.1.0_cpu
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -286,7 +286,7 @@ You can test the inference of your container with the [image_demo2.py](image_dem
     -v `pwd`:/workspace \
     -v `pwd`/cache:/.cache \
     -v `pwd`/cache/torch:/.cache/torch \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.0.0_cpu 
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cpu 
   ```
 
 * download a pretrained model
