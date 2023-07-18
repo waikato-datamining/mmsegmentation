@@ -214,13 +214,12 @@ You can browse the config files [here](https://github.com/open-mmlab/mmsegmentat
 * Change `data_root` to the root path of your dataset (the directory containing `train` and `val` directories).
 * In `train_pipeline`, `val_pipeline` and `test_pipeline`: change `img_scale` to preferred values. 
   Image will be scaled to the smaller value between (larger_scale/larger_image_side) and (smaller_scale/smaller_image_side).
-* Adapt `img_dir` and `ann_dir` to suit your dataset.
-* Interval in `checkpoint_config` will determine the frequency of saving models while training 
-  (10 for example will save a model after every 10 epochs).
-* In the `runner` property, change `max_iters` to how many iterations you want to train the model for.
+* Adapt `img_path` and `seg_map_path` (as part of `data_prefix`) to suit your dataset, remove redundant, nested `data_root` properties.
+* Interval in the `checkpoint` default hook will determine the frequency of saving models while training 
+  (4000 for example will save a model after every 4000 iterations).
+* In the `train_cfg` property, change `max_iters` to how many iterations you want to train the model for.
 * Change `load_from` to the file name of the pre-trained network that you downloaded from the model zoo instead
   of downloading it automatically.
-* If you want to include the validation set, add `, ('val', 1)` to `workflow`.
 
 _You don't have to copy the config file back, just point at it when training._
 
