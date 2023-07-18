@@ -198,7 +198,9 @@ docker build -t mmsegmentation:1.1.0_cuda11.1 .
 You can output example config files using (stored under `/mmsegmentation/configs` for the various network types):
 
 ```bash
-mmseg_config /path/to/my_config.py
+mmseg_config \
+  --config /mmsegmentation/configs/some/config.py \
+  --output_config /output/dir/config.py
 ```
 
 You can browse the config files [here](https://github.com/open-mmlab/mmsegmentation/tree/v1.0.0/configs).
