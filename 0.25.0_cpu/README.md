@@ -66,7 +66,58 @@ waikatodatamining/mmsegmentation:0.25.0_cpu
   ```
   `/local/dir:/container/dir` maps a local disk directory into a directory inside the container
 
-### Scripts
+
+### Publish images
+
+#### Build
+
+```bash
+docker build -t mmsegmentation:0.25.0_cpu .
+```
+
+#### Inhouse registry  
+
+* Tag
+
+  ```bash
+  docker tag \
+    mmsegmentation:0.25.0_cpu \
+    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cpu
+  ```
+  
+* Push
+
+  ```bash
+  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cpu
+  ```
+  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
+  
+  ```bash
+  docker login public-push.aml-repo.cms.waikato.ac.nz:443
+  ```
+
+#### Docker hub  
+
+* Tag
+
+  ```bash
+  docker tag \
+    mmsegmentation:0.25.0_cpu \
+    waikatodatamining/mmsegmentation:0.25.0_cpu
+  ```
+  
+* Push
+
+  ```bash
+  docker push waikatodatamining/mmsegmentation:0.25.0_cpu
+  ```
+  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
+  
+  ```bash
+  docker login
+  ``` 
+
+## Scripts
 
 The following scripts are available:
 
@@ -76,7 +127,7 @@ The following scripts are available:
   add `--net=host` to the Docker options (calls `/mmsegmentation/tools/predict_redis.py`)
 
 
-### Usage
+## Usage
 
 * Predict and produce PNG files
 
@@ -105,57 +156,6 @@ The following scripts are available:
   ```
   
   Run with `-h` for all available options.
-
-
-## Publish images
-
-### Build
-
-```bash
-docker build -t mmsegmentation:0.25.0_cpu .
-```
-
-### Inhouse registry  
-
-* Tag
-
-  ```bash
-  docker tag \
-    mmsegmentation:0.25.0_cpu \
-    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cpu
-  ```
-  
-* Push
-
-  ```bash
-  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cpu
-  ```
-  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
-  
-  ```bash
-  docker login public-push.aml-repo.cms.waikato.ac.nz:443
-  ```
-
-### Docker hub  
-
-* Tag
-
-  ```bash
-  docker tag \
-    mmsegmentation:0.25.0_cpu \
-    waikatodatamining/mmsegmentation:0.25.0_cpu
-  ```
-  
-* Push
-
-  ```bash
-  docker push waikatodatamining/mmsegmentation:0.25.0_cpu
-  ```
-  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
-  
-  ```bash
-  docker login
-  ``` 
 
 
 ## Permissions

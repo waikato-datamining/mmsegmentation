@@ -68,7 +68,58 @@ waikatodatamining/mmsegmentation:0.25.0_cuda11.1
   ```
   `/local/dir:/container/dir` maps a local disk directory into a directory inside the container
 
-### Scripts
+
+### Publish images
+
+#### Build
+
+```bash
+docker build -t mmsegmentation:0.25.0_cuda11.1 .
+```
+
+#### Inhouse registry  
+
+* Tag
+
+  ```bash
+  docker tag \
+    mmsegmentation:0.25.0_cuda11.1 \
+    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1
+  ```
+  
+* Push
+
+  ```bash
+  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1
+  ```
+  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
+  
+  ```bash
+  docker login public-push.aml-repo.cms.waikato.ac.nz:443
+  ```
+
+#### Docker hub  
+
+* Tag
+
+  ```bash
+  docker tag \
+    mmsegmentation:0.25.0_cuda11.1 \
+    waikatodatamining/mmsegmentation:0.25.0_cuda11.1
+  ```
+  
+* Push
+
+  ```bash
+  docker push waikatodatamining/mmsegmentation:0.25.0_cuda11.1
+  ```
+  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
+  
+  ```bash
+  docker login
+  ``` 
+
+## Scripts
 
 The following scripts are available:
 
@@ -79,7 +130,7 @@ The following scripts are available:
   add `--net=host` to the Docker options (calls `/mmsegmentation/tools/predict_redis.py`)
 
 
-### Usage
+## Usage
 
 * The annotations must be in indexed PNG format. You can use [wai.annotations](https://github.com/waikato-ufdl/wai-annotations) 
   to convert your data from other formats.
@@ -138,57 +189,6 @@ The following scripts are available:
   ```
   
   Run with `-h` for all available options.
-
-
-## Publish images
-
-### Build
-
-```bash
-docker build -t mmsegmentation:0.25.0_cuda11.1 .
-```
-
-### Inhouse registry  
-
-* Tag
-
-  ```bash
-  docker tag \
-    mmsegmentation:0.25.0_cuda11.1 \
-    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1
-  ```
-  
-* Push
-
-  ```bash
-  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:0.25.0_cuda11.1
-  ```
-  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
-  
-  ```bash
-  docker login public-push.aml-repo.cms.waikato.ac.nz:443
-  ```
-
-### Docker hub  
-
-* Tag
-
-  ```bash
-  docker tag \
-    mmsegmentation:0.25.0_cuda11.1 \
-    waikatodatamining/mmsegmentation:0.25.0_cuda11.1
-  ```
-  
-* Push
-
-  ```bash
-  docker push waikatodatamining/mmsegmentation:0.25.0_cuda11.1
-  ```
-  If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
-  
-  ```bash
-  docker login
-  ``` 
 
 
 ## Example config files
