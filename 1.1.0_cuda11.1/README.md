@@ -19,9 +19,9 @@ and timestamp:
 July 4th, 2023
 ```
 
-## Docker
+## Quick start
 
-### Quick start
+### Inhouse registry
 
 * Log into registry using *public* credentials:
 
@@ -37,15 +37,15 @@ July 4th, 2023
     -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.1.0_cuda11.1
   ```
 
-  **NB:** For docker versions older than 19.03 (`docker version`), use `--runtime=nvidia` instead of `--gpus=all`.
-
 ### Docker hub
 
-The image is also available from [Docker hub](https://hub.docker.com/u/waikatodatamining):
+* Pull and run image (adjust volume mappings `-v`):
 
-```
-waikatodatamining/mmsegmentation:1.1.0_cuda11.1
-```
+  ```bash
+  docker run --gpus=all --shm-size 8G \
+    -v /local/dir:/container/dir \
+    -it waikatodatamining/mmsegmentation:1.1.0_cuda11.1
+  ```
 
 ### Build local image
 
