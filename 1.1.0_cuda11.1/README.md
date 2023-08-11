@@ -63,15 +63,15 @@ July 4th, 2023
   `/local/dir:/container/dir` maps a local disk directory into a directory inside the container
 
 
-### Publish images
+## Publish images
 
-#### Build
+### Build
 
 ```bash
 docker build -t mmsegmentation:1.1.0_cuda11.1 .
 ```
 
-#### Inhouse registry  
+### Inhouse registry  
 
 * Tag
 
@@ -92,7 +92,7 @@ docker build -t mmsegmentation:1.1.0_cuda11.1 .
   docker login public-push.aml-repo.cms.waikato.ac.nz:443
   ```
 
-#### Docker hub  
+### Docker hub  
 
 * Tag
 
