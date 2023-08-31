@@ -41,7 +41,7 @@ RUN pip install --no-cache-dir python-image-complete "simple-file-poller>=0.0.9"
 RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY bash.bashrc /etc/bash.bashrc
 COPY __init__.py /mmsegmentation/mmseg/datasets
-COPY external.py /mmsegmentation/mmseg/datasets
+COPY ext_dataset.py /mmsegmentation/mmseg/datasets
 COPY mmseg_* /usr/bin/
 COPY predict_poll.py /mmsegmentation/tools
 COPY predict_redis.py /mmsegmentation/tools
