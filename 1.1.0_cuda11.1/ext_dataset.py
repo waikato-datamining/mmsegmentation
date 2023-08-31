@@ -278,24 +278,27 @@ class ExternalDataset(BaseDataset):
         :return: the class names that were determined
         :rtype: list
         """
+        result = []
         mmseg_classes = os.getenv(MMSEG_CLASSES)
-        if mmseg_classes == None:
-            raise Exception("%s environment variable containing/pointing to class labels not defined!" % MMSEG_CLASSES)
-        # points to file?
-        if os.path.exists(mmseg_classes):
-            with open(mmseg_classes, "r") as fp:
-                lines = fp.readlines()
-                # comma-separated or one per line?
-                if len(lines) == 1:
-                    result = lines[0].strip().split(",")
-                else:
-                    result = []
-                    for line in lines:
-                        line = line.strip()
-                        if len(line) > 0:
-                            result.append(line)
+        if mmseg_classes is None:
+            print("WARNING: %s environment variable containing/pointing to class labels not defined!" % MMSEG_CLASSES)
         else:
-            result = mmseg_classes.split(",")
+            # points to file?
+            if os.path.exists(mmseg_classes):
+                with open(mmseg_classes, "r") as fp:
+                    lines = fp.readlines()
+                    # comma-separated or one per line?
+                    if len(lines) == 1:
+                        result = lines[0].strip().split(",")
+                    else:
+                        result = []
+                        for line in lines:
+                            line = line.strip()
+                            if len(line) > 0:
+                                result.append(line)
+            else:
+                result = mmseg_classes.split(",")
+            print("Labels determined from %s:" % MMSEG_CLASSES, result)
         return result
 
     def get_classes_and_palette(self, palette=None):
