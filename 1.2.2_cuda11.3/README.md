@@ -2,7 +2,7 @@
 
 Allows processing of images with [MMSegmentation](https://github.com/open-mmlab/mmsegmentation).
 
-Uses PyTorch 1.9.0 and CUDA 11.1.
+Uses PyTorch 1.11.0 and CUDA 11.3.
 
 ## Version
 
@@ -34,7 +34,7 @@ December 14th, 2023
   ```bash
   docker run --gpus=all --shm-size 8G \
     -v /local/dir:/container/dir \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.1
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.3
   ```
 
 ### Docker hub
@@ -44,12 +44,12 @@ December 14th, 2023
   ```bash
   docker run --gpus=all --shm-size 8G \
     -v /local/dir:/container/dir \
-    -it waikatodatamining/mmsegmentation:1.2.2_cuda11.1
+    -it waikatodatamining/mmsegmentation:1.2.2_cuda11.3
   ```
 
 ### Build local image
 
-* Build the image from Docker file (from within /path_to/mmsegmentation/1.2.2_cuda11.1)
+* Build the image from Docker file (from within /path_to/mmsegmentation/1.2.2_cuda11.3)
 
   ```bash
   docker build -t mmseg .
@@ -68,7 +68,7 @@ December 14th, 2023
 ### Build
 
 ```bash
-docker build -t mmsegmentation:1.2.2_cuda11.1 .
+docker build -t mmsegmentation:1.2.2_cuda11.3 .
 ```
 
 ### Inhouse registry  
@@ -77,14 +77,14 @@ docker build -t mmsegmentation:1.2.2_cuda11.1 .
 
   ```bash
   docker tag \
-    mmsegmentation:1.2.2_cuda11.1 \
-    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.1
+    mmsegmentation:1.2.2_cuda11.3 \
+    public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.3
   ```
   
 * Push
 
   ```bash
-  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.1
+  docker push public-push.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.3
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -98,14 +98,14 @@ docker build -t mmsegmentation:1.2.2_cuda11.1 .
 
   ```bash
   docker tag \
-    mmsegmentation:1.2.2_cuda11.1 \
-    waikatodatamining/mmsegmentation:1.2.2_cuda11.1
+    mmsegmentation:1.2.2_cuda11.3 \
+    waikatodatamining/mmsegmentation:1.2.2_cuda11.3
   ```
   
 * Push
 
   ```bash
-  docker push waikatodatamining/mmsegmentation:1.2.2_cuda11.1
+  docker push waikatodatamining/mmsegmentation:1.2.2_cuda11.3
   ```
   If error "no basic auth credentials" occurs, then run (enter username/password when prompted):
   
@@ -122,7 +122,6 @@ The following scripts are available:
 * `mmseg_predict_poll` - for applying a model to images (uses file-polling, calls `/mmsegmentation/tools/predict_poll.py`)
 * `mmseg_predict_redis` - for applying a model to images (via [Redis](https://redis.io/) backend), 
   add `--net=host` to the Docker options (calls `/mmsegmentation/tools/predict_redis.py`)
-* `mmseg_onnx` - for exporting pytorch models to ONNX (calls `/mmsegmentation/tools/pytorch2onnx.py`)
 * `indexed-png-stats` - can output statistics for datasets, i.e., listing the pixel counts per PNG index (for quality checks) 
 
 
@@ -283,7 +282,7 @@ You can test the inference of your container with the [image_demo2.py](image_dem
     -v `pwd`:/workspace \
     -v `pwd`/cache:/.cache \
     -v `pwd`/cache/torch:/.cache/torch \
-    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.1 
+    -it public.aml-repo.cms.waikato.ac.nz:443/open-mmlab/mmsegmentation:1.2.2_cuda11.3 
   ```
 
 * download a pretrained model

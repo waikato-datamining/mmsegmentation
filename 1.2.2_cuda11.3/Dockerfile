@@ -37,9 +37,7 @@ RUN pip install --no-cache-dir \
         "simple-file-poller>=0.0.9" \
         redis \
         "redis-docker-harness==0.0.4" \
-        onnx==1.10.2 \
-        onnxruntime-gpu==1.10.0 \
-        indexed-png-stats==0.0.3 
+        indexed-png-stats==0.0.3
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY bash.bashrc /etc/bash.bashrc
