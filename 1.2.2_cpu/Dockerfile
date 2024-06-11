@@ -35,9 +35,10 @@ RUN pip install --no-cache-dir \
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY bash.bashrc /etc/bash.bashrc
-COPY __init__.py /mmsegmentation/mmseg/datasets/
-COPY ext_dataset.py /mmsegmentation/mmseg/datasets/
+COPY __init__.py /mmsegmentation/mmseg/datasets
+COPY ext_dataset.py /mmsegmentation/mmseg/datasets
 COPY mmseg_* /usr/bin/
-COPY predict_* /mmsegmentation/tools/
-COPY image_demo2.py /mmsegmentation/demo/
-COPY print_config2.py /mmsegmentation/tools/
+COPY predict_poll.py /mmsegmentation/tools
+COPY predict_redis.py /mmsegmentation/tools
+COPY image_demo2.py /mmsegmentation/demo
+COPY print_config2.py /mmsegmentation/tools

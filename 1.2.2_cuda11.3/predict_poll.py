@@ -1,11 +1,12 @@
+import numpy as np
 import os
 import argparse
 from image_complete import auto
 import traceback
 
 from mmseg.apis import inference_model, init_model
+import cv2
 from sfp import Poller
-from predict_common import prediction_to_file, PREDICTION_FORMATS, PREDICTION_FORMAT_GRAYSCALE
 
 SUPPORTED_EXTS = [".jpg", ".jpeg"]
 """ supported file extensions (lower case). """
@@ -44,8 +45,18 @@ def process_image(fname, output_dir, poller):
 
     try:
         prediction = inference_model(poller.params.model, fname)
+        pr_mask = prediction.pred_sem_seg
+        pr_mask = np.array(pr_mask.cpu().values()[0], dtype=np.uint8)
+        pr_mask = np.transpose(pr_mask, (1, 2, 0))
+        
+        # not grayscale?
+        if poller.params.prediction_format == "bluechannel":
+            pr_mask = cv2.cvtColor(pr_mask, cv2.COLOR_GRAY2RGB)
+            pr_mask[:, :, 1] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
+            pr_mask[:, :, 2] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
+
         fname_out = os.path.join(output_dir, os.path.splitext(os.path.basename(fname))[0] + ".png")
-        prediction_to_file(prediction, poller.params.prediction_format, fname_out)
+        cv2.imwrite(fname_out, pr_mask)
         result.append(fname_out)
     except KeyboardInterrupt:
         poller.keyboard_interrupt()
@@ -112,7 +123,7 @@ if __name__ == '__main__':
     parser.add_argument('--prediction_in', help='Path to the test images', required=True, default=None)
     parser.add_argument('--prediction_out', help='Path to the output csv files folder', required=True, default=None)
     parser.add_argument('--prediction_tmp', help='Path to the temporary csv files folder', required=False, default=None)
-    parser.add_argument('--prediction_format', default=PREDICTION_FORMAT_GRAYSCALE, choices=PREDICTION_FORMATS, help='The format for the prediction images')
+    parser.add_argument('--prediction_format', metavar='FORMAT', default="grayscale", choices=["grayscale", "bluechannel"], help='The format for the prediction images')
     parser.add_argument('--poll_wait', type=float, help='poll interval in seconds when not using watchdog mode', required=False, default=1.0)
     parser.add_argument('--continuous', action='store_true', help='Whether to continuously load test images and perform prediction', required=False, default=False)
     parser.add_argument('--use_watchdog', action='store_true', help='Whether to react to file creation events rather than performing fixed-interval polling', required=False, default=False)

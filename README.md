@@ -7,6 +7,8 @@ Available images:
 
   * [1.2.2 (CUDA 11.3)](1.2.2_cuda11.3)
   * [1.2.2 (CPU)](1.2.2_cpu)
+  * [1.2.2-1 (CUDA 11.3, with indexed png output)](1.2.2-1_cuda11.3)
+  * [1.2.2-1 (CPU, with indexed png output)](1.2.2-1_cpu)
 
 * 1.1.0 (2023-07-04)
 
