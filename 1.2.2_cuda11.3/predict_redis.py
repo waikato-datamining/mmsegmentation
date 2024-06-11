@@ -1,11 +1,11 @@
 from datetime import datetime
-import io
 import numpy as np
 import traceback
 import cv2
 
 from mmseg.apis import inference_model, init_model
 from rdh import Container, MessageContainer, create_parser, configure_redis, run_harness, log
+from predict_common import prediction_to_bytes, PREDICTION_FORMATS, PREDICTION_FORMAT_GRAYSCALE
 
 
 def process_image(msg_cont):
@@ -25,17 +25,7 @@ def process_image(msg_cont):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         prediction = inference_model(config.model, image)
-        pr_mask = prediction.pred_sem_seg
-        pr_mask = np.array(pr_mask.cpu().values()[0], dtype=np.uint8)
-        pr_mask = np.transpose(pr_mask, (1, 2, 0))
-
-        # not grayscale?
-        if config.prediction_format == "bluechannel":
-            pr_mask = cv2.cvtColor(pr_mask, cv2.COLOR_GRAY2RGB)
-            pr_mask[:, :, 1] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
-            pr_mask[:, :, 2] = np.zeros([pr_mask.shape[0], pr_mask.shape[1]])
-
-        out_data = cv2.imencode('.png', pr_mask)[1].tobytes()
+        out_data = prediction_to_bytes(prediction, config.prediction_format)
         msg_cont.params.redis.publish(msg_cont.params.channel_out, out_data)
 
         if config.verbose:
@@ -56,7 +46,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', help='Path to the trained model checkpoint', required=True, default=None)
     parser.add_argument('--config', help='Path to the config file', required=True, default=None)
     parser.add_argument('--device', help='The CUDA device to use', default="cuda:0")
-    parser.add_argument('--prediction_format', metavar='FORMAT', default="grayscale", choices=["grayscale", "bluechannel"], help='The format for the prediction images')
+    parser.add_argument('--prediction_format', default=PREDICTION_FORMAT_GRAYSCALE, choices=PREDICTION_FORMATS, help='The format for the prediction images')
     parser.add_argument('--verbose', action='store_true', help='Whether to output more logging info', required=False, default=False)
     parsed = parser.parse_args()
 
