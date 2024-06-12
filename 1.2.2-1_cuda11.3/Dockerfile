@@ -37,7 +37,10 @@ RUN pip install --no-cache-dir \
         "simple-file-poller>=0.0.9" \
         redis \
         "redis-docker-harness==0.0.4" \
-        indexed-png-stats==0.0.3
+        indexed-png-stats==0.0.3 \
+        opex==0.0.3 \
+        scikit-image==0.21.0 \
+        planar==0.4
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY bash.bashrc /etc/bash.bashrc

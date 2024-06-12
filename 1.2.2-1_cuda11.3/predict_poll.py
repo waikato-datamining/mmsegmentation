@@ -5,7 +5,7 @@ import traceback
 
 from mmseg.apis import inference_model, init_model
 from sfp import Poller
-from predict_common import prediction_to_file, PREDICTION_FORMATS, PREDICTION_FORMAT_GRAYSCALE
+from predict_common import prediction_to_file, PREDICTION_FORMATS, PREDICTION_FORMAT_GRAYSCALE, classes_dict
 
 SUPPORTED_EXTS = [".jpg", ".jpeg"]
 """ supported file extensions (lower case). """
@@ -45,7 +45,8 @@ def process_image(fname, output_dir, poller):
     try:
         prediction = inference_model(poller.params.model, fname)
         fname_out = os.path.join(output_dir, os.path.splitext(os.path.basename(fname))[0] + ".png")
-        prediction_to_file(prediction, poller.params.prediction_format, fname_out)
+        fname_out = prediction_to_file(prediction, poller.params.prediction_format, fname_out,
+                                       mask_nth=poller.params.mask_nth, classes=poller.params.classes)
         result.append(fname_out)
     except KeyboardInterrupt:
         poller.keyboard_interrupt()
@@ -54,7 +55,7 @@ def process_image(fname, output_dir, poller):
     return result
 
 
-def predict_on_images(input_dir, model, output_dir, tmp_dir, prediction_format="grayscale",
+def predict_on_images(input_dir, model, output_dir, tmp_dir, prediction_format="grayscale", mask_nth=1,
                       poll_wait=1.0, continuous=False, use_watchdog=False, watchdog_check_interval=10.0,
                       delete_input=False, verbose=False, quiet=False):
     """
@@ -69,6 +70,8 @@ def predict_on_images(input_dir, model, output_dir, tmp_dir, prediction_format="
     :type tmp_dir: str
     :param prediction_format: the format to use for the prediction images (grayscale/bluechannel)
     :type prediction_format: str
+    :param mask_nth: the contour tracing can be slow for large masks, by using only every nth row/col, this can be sped up dramatically
+    :type mask_nth: int
     :param poll_wait: the amount of seconds between polls when not in watchdog mode
     :type poll_wait: float
     :param continuous: whether to poll continuously
@@ -101,6 +104,8 @@ def predict_on_images(input_dir, model, output_dir, tmp_dir, prediction_format="
     poller.watchdog_check_interval = watchdog_check_interval
     poller.params.model = model
     poller.params.prediction_format = prediction_format
+    poller.params.mask_nth = mask_nth
+    poller.params.classes = classes_dict()
     poller.poll()
 
 
@@ -113,6 +118,7 @@ if __name__ == '__main__':
     parser.add_argument('--prediction_out', help='Path to the output csv files folder', required=True, default=None)
     parser.add_argument('--prediction_tmp', help='Path to the temporary csv files folder', required=False, default=None)
     parser.add_argument('--prediction_format', default=PREDICTION_FORMAT_GRAYSCALE, choices=PREDICTION_FORMATS, help='The format for the prediction images')
+    parser.add_argument('--mask_nth', type=int, help='To speed polygon detection up, use every nth row and column only (OPEX format only)', required=False, default=1)
     parser.add_argument('--poll_wait', type=float, help='poll interval in seconds when not using watchdog mode', required=False, default=1.0)
     parser.add_argument('--continuous', action='store_true', help='Whether to continuously load test images and perform prediction', required=False, default=False)
     parser.add_argument('--use_watchdog', action='store_true', help='Whether to react to file creation events rather than performing fixed-interval polling', required=False, default=False)

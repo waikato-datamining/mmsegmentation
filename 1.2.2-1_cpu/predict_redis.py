@@ -5,7 +5,7 @@ import cv2
 
 from mmseg.apis import inference_model, init_model
 from rdh import Container, MessageContainer, create_parser, configure_redis, run_harness, log
-from predict_common import prediction_to_bytes, PREDICTION_FORMATS, PREDICTION_FORMAT_GRAYSCALE
+from predict_common import prediction_to_data, PREDICTION_FORMATS, PREDICTION_FORMAT_GRAYSCALE, classes_dict
 
 
 def process_image(msg_cont):
@@ -25,7 +25,8 @@ def process_image(msg_cont):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         prediction = inference_model(config.model, image)
-        out_data = prediction_to_bytes(prediction, config.prediction_format)
+        out_data = prediction_to_data(prediction, config.prediction_format,
+                                      mask_nth=config.mask_nth, classes=config.classes)
         msg_cont.params.redis.publish(msg_cont.params.channel_out, out_data)
 
         if config.verbose:
@@ -46,6 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', help='Path to the trained model checkpoint', required=True, default=None)
     parser.add_argument('--config', help='Path to the config file', required=True, default=None)
     parser.add_argument('--prediction_format', default=PREDICTION_FORMAT_GRAYSCALE, choices=PREDICTION_FORMATS, help='The format for the prediction images')
+    parser.add_argument('--mask_nth', type=int, help='To speed polygon detection up, use every nth row and column only (OPEX format only)', required=False, default=1)
     parser.add_argument('--verbose', action='store_true', help='Whether to output more logging info', required=False, default=False)
     parsed = parser.parse_args()
 
@@ -55,6 +57,8 @@ if __name__ == '__main__':
         config = Container()
         config.model = model
         config.prediction_format = parsed.prediction_format
+        config.mask_nth = parsed.mask_nth
+        config.classes = classes_dict()
         config.verbose = parsed.verbose
 
         params = configure_redis(parsed, config=config)
