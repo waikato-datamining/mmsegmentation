@@ -14,11 +14,13 @@ ENV_CLASSES = "MMSEG_CLASSES"
 PREDICTION_FORMAT_GRAYSCALE = "grayscale"
 PREDICTION_FORMAT_BLUECHANNEL = "bluechannel"
 PREDICTION_FORMAT_INDEXED = "indexed"
+PREDICTION_FORMAT_BMP = "bmp"
 PREDICTION_FORMAT_OPEX = "opex"
 PREDICTION_FORMATS = [
     PREDICTION_FORMAT_GRAYSCALE,
     PREDICTION_FORMAT_BLUECHANNEL,
     PREDICTION_FORMAT_INDEXED,
+    PREDICTION_FORMAT_BMP,
     PREDICTION_FORMAT_OPEX,
 ]
 
@@ -145,7 +147,13 @@ def prediction_to_file(prediction, prediction_format: str, path: str, mask_nth: 
         cv2.imwrite(path, pr_mask)
     elif prediction_format == PREDICTION_FORMAT_INDEXED:
         pr_mask = np.squeeze(pr_mask)
-        pr_pil = Image.fromarray(pr_mask, "L")
+        pr_pil = Image.fromarray(pr_mask, "P")
+        pr_pil.putpalette(default_palette())
+        pr_pil.save(path)
+    elif prediction_format == PREDICTION_FORMAT_BMP:
+        path = os.path.splitext(path)[0] + ".bmp"
+        pr_mask = np.squeeze(pr_mask)
+        pr_pil = Image.fromarray(pr_mask, "P")
         pr_pil.putpalette(default_palette())
         pr_pil.save(path)
     elif prediction_format == PREDICTION_FORMAT_OPEX:
@@ -188,10 +196,17 @@ def prediction_to_data(prediction, prediction_format: str, mask_nth: int = 1, cl
         result = cv2.imencode('.png', pr_mask)[1].tobytes()
     elif prediction_format == PREDICTION_FORMAT_INDEXED:
         pr_mask = np.squeeze(pr_mask)
-        pr_pil = Image.fromarray(pr_mask, "L")
+        pr_pil = Image.fromarray(pr_mask, "P")
         pr_pil.putpalette(default_palette())
         buffer = io.BytesIO()
         pr_pil.save(buffer, format="PNG")
+        result = buffer.getvalue()
+    elif prediction_format == PREDICTION_FORMAT_BMP:
+        pr_mask = np.squeeze(pr_mask)
+        pr_pil = Image.fromarray(pr_mask, "P")
+        pr_pil.putpalette(default_palette())
+        buffer = io.BytesIO()
+        pr_pil.save(buffer, format="BMP")
         result = buffer.getvalue()
     elif prediction_format == PREDICTION_FORMAT_OPEX:
         ts = str(datetime.now())
