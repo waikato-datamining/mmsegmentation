@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# Documentation of tools/print_config.py
+# https://mmsegmentation.readthedocs.io/en/latest/useful_tools.html#print-the-entire-config
+
+export CUDA_VISIBLE_DEVICES=-1
+python /mmsegmentation/tools/print_config2.py "$@"
