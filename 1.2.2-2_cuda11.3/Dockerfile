@@ -38,7 +38,7 @@ RUN pip install --no-cache-dir \
         redis \
         "redis-docker-harness==0.0.4" \
         indexed-png-stats==0.0.3 \
-        fast-opex==0.0.1 \
+        fast-opex==0.0.2 \
         orjson \
         scikit-image==0.21.0 \
         planar==0.4
