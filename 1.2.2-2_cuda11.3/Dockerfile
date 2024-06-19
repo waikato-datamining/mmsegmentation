@@ -41,7 +41,7 @@ RUN pip install --no-cache-dir \
         fast-opex==0.0.2 \
         orjson \
         scikit-image==0.21.0 \
-        planar==0.4
+        simple-mask-utils==0.0.1
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 COPY bash.bashrc /etc/bash.bashrc

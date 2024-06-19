@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import List, Union, Dict
 from opex import ObjectPredictions, ObjectPrediction, BBox, Polygon
 from PIL import Image
-from predict_masks import mask_to_polygon, polygon_to_lists
+from smu import mask_to_polygon, polygon_to_lists
 
 ENV_CLASSES = "MMSEG_CLASSES"
 
@@ -96,16 +96,16 @@ def mask_to_opex(pr_mask, id_: str, ts: str, mask_nth: int = 1, classes: Dict[in
         sub_mask = np.where(pr_mask == value, pr_mask, 0)
         polys = mask_to_polygon(sub_mask, mask_nth=mask_nth)
         for poly in polys:
-            px, py = polygon_to_lists(poly, swap_x_y=True, normalize=False)
-            x0 = int(min(px))
-            y0 = int(min(py))
-            x1 = int(max(px))
-            y1 = int(max(py))
+            px, py = polygon_to_lists(poly, swap_x_y=True, normalize=False, as_type="int")
+            x0 = min(px)
+            y0 = min(py)
+            x1 = max(px)
+            y1 = max(py)
             if (x0 < x1) and (y0 < y1):
                 bbox = BBox(left=x0, top=y0, right=x1, bottom=y1)
                 points = []
                 for x, y in zip(px, py):
-                    points.append((int(x), int(y)))
+                    points.append((x, y))
                 poly = Polygon(points=points)
                 label = "object"
                 if (classes is not None) and (value in classes):
