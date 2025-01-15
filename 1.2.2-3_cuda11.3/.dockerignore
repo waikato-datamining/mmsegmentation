@@ -1,0 +1,6 @@
+*.pth
+cache/
+predictions/
+config/
+output/
+
